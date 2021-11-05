@@ -1,0 +1,99 @@
+# This Add-in Tool requires the following workflow secrets (name.field):
+#
+# burp-suite-api-key.key
+# burp-suite-api-key.hashed-key
+#
+# You can create an API key and its related hashed_key value by using the
+# Burp Suite application:
+#
+# 1) Start the Burp Suite application and proceed to the main UI
+# 2) Click User Options and Misc
+# 3) Under REST API, API Keys, click New
+# 4) Enter a user-friendly name (e.g., key1)
+# 5) Click 'Copy key to clipboard'
+# 6) Click OK
+#
+# Use the value on the clipboard for burp-suite-api-key.key
+#
+# To find the value of burp-suite-api-key.hashed-key:
+#
+# 1) Click the Burp menu, 'User options', and 'Save user options'
+# 2) Save your options to a file named burp-user-options
+# 3) Open burp-user-options.json in a text editor
+# 4) Search for the user-friendly key name you specified
+# 5) Copy the value of the related hashed_key to the clipboard
+#
+# Use the value on the clipboard for burp-suite-api-key.hashed-key
+#
+# Note: Here's an example of hashed_key:
+#
+# {
+#     "user_options":{
+#         "misc":{
+#             "api":{
+#                 "address":"",
+#                 "enabled":true,
+#                 "insecure_mode":false,
+#                 "keys":[
+#                     {
+#                         "created":1564773138343,
+#                         "enabled":true,
+#  -->                    "hashed_key":"F/mmTIwXcY/YkZm4SYyyFgglu82zBDeesm8LD7IQNtM=",
+#                         "name":"key1"
+#                     }
+#                 ],
+#                 "listen_mode":"loopback_only",
+#                 "port":2727
+#             }
+#         }
+#     }
+# }
+#
+# Optionally, you can also add one or more workflow secrets for application login
+# credentials by specifying a username and password field for each workflow secret
+# named something other than key or hashed_key.
+#
+
+[scan]
+name = ""                                                            # the name associated with your scan (must be an empty string for Burp Suite Professional)
+urls = [""]                                                          # the URL(s) to scan, use a command to separate multiple URLs
+includeSimpleScope = []                                              # the list of items to include in the scan's scope
+excludeSimpleScope = []                                              # the list of items to exclude from the scan's scope
+namedConfigurations = ["Never stop audit due to application errors"] # the Burp Suite named configurations to use with the scan
+apiPort = 2727                                                       # the port number where the Burp Suite API will be made available
+
+[request] # (reserved for Code Dx use)
+
+# The image name contains the Docker image that handles this scan request file.
+#
+# NOTE: The codedx-burpsuiterunnerbase:v1.0 Docker image does not contain the
+# Burp Suite software. To use this add-in tool, you must create your own
+# Docker image container your licensed, activated copy of Burp Suite. Refer to
+# the Code Dx User Guide for more details.
+#
+imageName = "codedx-burpsuiterunnerbase:v1.0"
+
+# The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
+# file, and the exit code file. The user running the Docker image *must* have write access
+# to the work directory.
+#
+# $workDirectory/analysis-exit-code  - exit code of the shell command
+# $workDirectory/ca-certificates     - trusted CA certificates
+# $workDirectory/config/request.toml - a copy of the scan request file
+# $workDirectory/input               - analysis input
+# $workDirectory/workflow-secrets    - workflow secrets
+#
+workDirectory = "/opt/codedx/burpsuite/work"
+
+# The shell cmd to run as the entry point for the tool.
+#
+shellCmd = '''
+	pwsh /opt/codedx/burpsuite/bin/BurpSuite.ps1 \
+		/opt/codedx/burpsuite/bin/burpsuite_pro.jar \
+		/opt/codedx/burpsuite/bin/generate-report-burp-extension-1.0.0.jar \
+		/opt/codedx/burpsuite/work/config/request.toml
+'''
+
+# The result file contains the tool output provided to Code Dx.
+#
+resultFilePath = "/opt/codedx/burpsuite/work/output/burpsuite.output.xml"

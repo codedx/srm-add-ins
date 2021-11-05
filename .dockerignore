@@ -1,0 +1,16 @@
+*
+!build/blackduck
+!build/blackduck-sbt
+!build/burpsuite
+!build/checkmarx
+!build/common
+!build/coverity
+!build/golangci-lint
+!build/gosec
+!build/govet
+!build/securitycodescan
+!build/staticcheck
+!cmd/testconnect
+!cmd/zap
+!go.mod
+!pkg

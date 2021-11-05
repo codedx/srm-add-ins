@@ -1,0 +1,41 @@
+# This Add-in Tool requires the following workflow secrets (name.field):
+#
+# checkmarx-project-credential.username
+# checkmarx-project-credential.password
+#
+# Additionally, the value of the projectId parameter must be the ID of an existing Checkmarx
+# project accessible by the specified credential workflow secret.
+#
+
+[checkmarx]
+baseUrl = ""                # the base URL endpoint for the Checkmarx scanner
+projectId = 0               # the Checkmarx-assigned ID of a project created by the Checkmarx software at the base URL
+
+[scan]
+checkScanStatusDelay = 60   # the delay in seconds between requests to fetch scan status
+
+[request] # (reserved for Code Dx use)
+
+# The image name contains the Docker image that handles this scan request file.
+#
+imageName = "codedx-checkmarxrunner:v1.0"
+
+# The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
+# file, and the exit code file. The user running the Docker image *must* have write access
+# to the work directory.
+#
+# $workDirectory/analysis-exit-code  - exit code of the shell command
+# $workDirectory/ca-certificates     - trusted CA certificates
+# $workDirectory/config/request.toml - a copy of the scan request file
+# $workDirectory/input               - analysis input
+# $workDirectory/workflow-secrets    - workflow secrets
+#
+workDirectory = "/opt/codedx/checkmarx/work"
+
+# The shell cmd to run as the entry point for the tool.
+#
+shellCmd = "pwsh /opt/codedx/checkmarx/bin/Checkmarx.ps1 /opt/codedx/checkmarx/work/config/request.toml"
+
+# The result file contains the tool output provided to Code Dx.
+#
+resultFilePath = "/opt/codedx/checkmarx/work/output/checkmarx.output.xml"

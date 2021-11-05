@@ -1,0 +1,55 @@
+
+[source-code]
+
+relativeDirectory=''            # source code directory specified by relative directory name (overrides projectFileDirectoryPatterns)
+projectFileDirectoryPatterns=[] # patterns (e.g., *.sln,*.csproj) to find source code directory by largest, first file found
+
+[cov-configure]
+
+options=[]
+
+[cov-build] # cov-build options
+
+preBuildCmdLine=''
+buildCmdLine=[]
+options=[]
+
+[cov-capture] # cov-capture options
+
+options=[]
+
+[cov-analyze] # cov-analyze options
+
+options=[]
+
+[request]  # (reserved for Code Dx use)
+
+# The image name contains the Docker image that handles this scan request file.
+#
+imageName = "codedx-coverityrunner:v1.0"
+
+# The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
+# file, and the exit code file. The user running the Docker image *must* have write access
+# to the work directory.
+#
+# $workDirectory/analysis-exit-code  - exit code of the shell command
+# $workDirectory/ca-certificates     - trusted CA certificates
+# $workDirectory/config/request.toml - a copy of the scan request file
+# $workDirectory/input               - analysis input
+# $workDirectory/workflow-secrets    - workflow secrets
+#
+workDirectory = "/opt/codedx/coverity/work"
+
+# The shell cmd to run as the entry point for the tool.
+#
+shellCmd = '''
+	source=$(ls /opt/codedx/coverity/work/input)
+	pwsh /opt/codedx/coverity/script/Coverity.ps1 \
+		"/opt/codedx/coverity/work/input/$source" \
+		/opt/codedx/coverity/work/config/request.toml
+'''
+
+# The result file contains the tool output provided to Code Dx.
+#
+resultFilePath = "/opt/codedx/coverity/work/output/coverity-v8-output.json"
+

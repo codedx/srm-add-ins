@@ -1,0 +1,103 @@
+Burp Suite Pro Add-In Configuration
+
+01) Create a directory named burpsuite
+
+02) Copy the Burp Suite JAR file from your BurpSuitePro directory (e.g., burpsuite_pro.jar) to the burpsuite directory
+
+03) Create a new Dockerfile in the burpsuite directory with this content (replace burpsuite_pro.jar as necessary):
+
+	ARG  BURPSUITE_JAR=burpsuite_pro.jar
+	FROM codedx/codedx-burpsuiterunnerbase:v1.9.1
+	COPY $BURPSUITE_JAR /opt/codedx/burpsuite/bin/$BURPSUITE_JAR
+
+04) Create a Burp Suite Docker image with this command run from the burpsuite directory:
+
+	docker build -t codedx-burpsuiterunner-unactivated:v1.0.0 .
+
+05) Run a new shell in the codedx-burpsuiterunner-unactivated:v1.0.0 container with this command:
+
+	docker run -it --name burpsuite codedx-burpsuiterunner-unactivated:v1.0.0 sh
+
+06) From the container, run Burp and activate your license (replace burpsuite_pro.jar if necessary):
+
+	a. java -jar /opt/codedx/burpsuite/bin/burpsuite_pro.jar
+	b. Respond to license agreement question
+	c. Paste license text
+	d. Enter activation method (e.g., 'o' for online)
+	e. Enter Ctrl+C to exit BurpSuite and leave the container running
+
+07) From another terminal window, save your changes as a new Docker image:
+
+	docker commit burpsuite codedx-burpsuiterunner-licensed:v1.0.0
+
+08) Exit the docker shell you started in Step 5
+
+09) Copy your codedx-burpsuiterunner-licensed:v1.0.0 Docker image to a **private** Docker registry (to not publicly share your Burp Suite license)
+
+10) Click Add-In Tools on the Code Dx Admin page and edit the Burp Suite TOML configuration:
+
+	a. Set the imageName parameter by referencing your licensed Burp Suite Docker image name
+	b. Under shellCmd, set change the burpsuite_pro.jar filename, if necessary
+	c. Click Done
+
+11) Without using Docker, start the Burp Suite application and proceed to the main UI
+
+12) Obtain a burp-suite-api-key.key value
+
+	a. Click User Options and Misc
+	b. Under REST API, API Keys, click New
+	c. Enter a user-friendly name (e.g., key1)
+	d. Click 'Copy key to clipboard'
+	e. Save the key value that you copied to the clipboard
+	f. Click OK
+
+13) Obtain the burp-suite-api-key.hashed-key
+
+	a. Click the Burp menu, 'User options', and 'Save user options'
+	b. Save your options to a file named burp-user-options
+	c. Open burp-user-options.json in a text editor
+	d. Search for the user-friendly key name you specified
+	e. Copy the value of the related hashed_key to the clipboard (e.g., you'd copy BDeesm8LD7 if you see "hashed_key":"BDeesm8LD7")
+	f. Save the hashed-key value that you copied to the clipboard
+
+Burp Suite Pro Add-In Project Configuration
+
+14) Open your project's Tool Orchestration Configuration page
+
+15) Click Burp Suite
+
+16) Specify a URL to scan in the Config window
+
+17) Click the Save button
+
+18) Click the Add New Secret button under Project Secrets
+
+19) Enter burp-suite-api-key and click OK
+
+20) Create the burp-suite-api-key.key field
+
+	a. Click Add Sensitive Field
+	b. Enter key and click OK
+	c. Paste your burp-suite-api-key.key value
+	d. Paste to confirm, but don't click the Save icon
+
+21) Create the burp-suite-api-key.hashed-key field
+
+	a. Click Add Sensitive Field
+	b. Enter hashed-key and click OK
+	c. Paste your burp-suite-api-key.hashed-key value
+	d. Paste to confirm
+	e. Click the Save icon to save the project secret
+
+22) Under Burp Suite, Assigned Secrets, check burp-suite-api-key, and click Save
+
+23) Click the Disabled toggle and Save to enable the Add-In for your project
+
+24) If your site requires a username/password, you can optionally add project secrets for authorized users
+
+	a. Click the Add New Secret button under Project Secrets
+	b. Enter a valid name and click OK
+	c. Click Add Field, enter username, click OK, and enter the application user ID
+	d. Click Add Sensitive field, enter password, click OK, enter and confirm the application user password
+	e. Click the Save icon to save the project secret
+

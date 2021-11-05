@@ -1,0 +1,6 @@
+.idea
+.vscode
+Dockerfile
+Dockerfile-specialized
+*.exe
+*.exe~
