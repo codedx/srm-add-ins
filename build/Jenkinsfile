@@ -1,0 +1,267 @@
+@Library('codedx-build-feature-releasefuncs')
+
+commit = ''
+commitShort = ''
+
+buildName = 'Code Dx Add-Ins'
+gitHubRepo = 'codedx/codedx-add-ins'
+
+nextVersion = ''
+hasNextVersion = false
+
+def getRepo(useLFS=false) {
+
+	options = [
+		[$class: 'RelativeTargetDirectory', relativeTargetDir: 'repo'],
+		[$class: 'PruneStaleBranch'],
+		[$class: 'CleanCheckout']
+	]
+	if (useLFS) {
+		options += [$class: 'GitLFSPull']
+	}
+
+	checkout([$class: 'GitSCM',
+		branches: scm.branches,
+		browser: scm.browser,
+		doGenerateSubmoduleConfigurations: false,
+		extensions: options,
+		submoduleCfg: scm.submoduleCfg,
+		userRemoteConfigs: scm.userRemoteConfigs
+	]).GIT_COMMIT
+}
+
+pipeline {
+
+	options {
+		skipDefaultCheckout true // we will checkout later
+	}
+
+	agent none
+
+	stages {
+
+		stage('Build') {
+
+			agent {
+				label 'codedx-tool-orchestration-build-large'
+			}
+
+			stages {
+
+				stage('Build - Checkout') {
+					steps {
+						script {
+							commit = getRepo(false)
+							currentBuild.displayName = commit
+							commitShort = "${commit.substring(0, 10)}"
+						}
+					}
+				}
+
+				stage('Build - Compile') {
+					steps {
+						setBuildStatus(gitHubRepo, commit, 'pending', 'Building')
+						sh 'cd "$WORKSPACE/repo" && go mod tidy && go install ./...'
+					}
+				}
+
+				stage('Build - Test') {
+					steps {
+						setBuildStatus(gitHubRepo, commit, 'pending', 'Testing')
+						sh 'cd "$WORKSPACE/repo" && go test ./...'
+					}
+				}
+
+				stage('Build - Analyze') {
+					when { branch 'master' }
+					steps {
+						setBuildStatus(gitHubRepo, commit, 'pending', 'Analyzing')
+						withCredentials([
+							string(credentialsId: 'codedx-internal-api-key', variable: 'API_KEY'),
+							string(credentialsId: 'codedx-internal-url', variable: 'CODEDX_URL')
+						]) {
+							step([
+								$class: 'CodeDxPublisher',
+								excludedSourceAndBinaryFiles: '',
+								key: "$API_KEY",
+								projectId: '10',
+								sourceAndBinaryFiles: '**',
+								url: "$CODEDX_URL",
+								analysisName: "Build [${currentBuild.displayName[0..8]}]($BUILD_URL)",
+								analysisResultConfiguration: [failureOnlyNew: false, failureSeverity: 'High', numBuildsInGraph: 25, unstableOnlyNew: false, unstableSeverity: 'None']
+							])
+						}
+					}
+				}
+
+				stage('Build - Has Next Version') {
+					steps {
+						script {
+							dir ('repo') {
+								withCredentials([usernamePassword(credentialsId: 'codedx-build-github', usernameVariable: 'username', passwordVariable: 'token')]) {
+									outputPreview = release.runSemanticRelease(token, true)
+									nextVersion = release.getNextVersion(outputPreview)
+									hasNextVersion = nextVersion != ''
+									println("Next version is '$nextVersion' (hasNextVersion=$hasNextVersion)")
+								}
+							}
+						}
+					}
+				}
+			}
+
+			post {
+				success {
+					setBuildStatus(gitHubRepo, commit, 'success', '')
+					milestone ordinal: 1, label: "$buildName Build Success"
+                    script {
+                        slack.info "$buildName Build stage succeeded (Docker Build pending): <${env.BUILD_URL}console|Open>"
+                    }
+				}
+				failure {
+					setBuildStatus(gitHubRepo, commit, 'failed', 'Build failed')
+                    script {
+                        slack.error "$buildName Build stage failed: <${env.BUILD_URL}console|Open>"
+                    }
+				}
+			}
+		}
+
+		stage('Docker Build') {
+
+			input {
+				message "Build and publish Docker images to AWS registry?"
+			}
+
+			agent {
+				label 'codedx-tool-orchestration-build-large'
+			}
+
+			stages {
+
+				stage('Docker Build - Milestone') {
+					steps {
+						milestone ordinal: 2, label: 'Promoted to Docker Publish'
+					}
+				}
+
+				stage('Docker Build - Checkout') {
+					steps {
+						script {
+							getRepo(false)
+						}
+					}
+				}
+
+				stage('Docker Build - Copy Licenses') {
+					steps {
+						script {
+							sh 'pwsh "$WORKSPACE/repo/build/copy-licenses.ps1"'
+						}
+					}
+				}
+
+				stage('Docker Build - staticcheck') {
+					steps {
+						script {
+							dir ('repo/build/staticcheck') {
+								docker.buildPrivateDockerImage('codedx/codedx-staticcheckrunner', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+			}
+
+			post {
+				success {
+					script {
+						nextStageMessage = "$buildName Docker Build stage succeeded"
+						if (hasNextVersion) {
+							nextStageMessage += "(Release pending)"
+						}
+						nextStageMessage += ": <${env.BUILD_URL}console|Open>"
+
+                        slack.info nextStageMessage
+					}
+				}
+				failure {
+                    script {
+                        slack.error "$buildName Docker Build stage failed: <${env.BUILD_URL}console|Open>"
+                    }
+				}
+			}
+		}
+
+		stage('Release') {
+
+			when {
+				branch 'master'
+				beforeInput true
+				expression { return hasNextVersion }
+			}
+
+			input {
+				message 'Release Docker image(s) to Docker Hub?'
+			}
+
+			agent {
+				label 'codedx-tool-orchestration-build-large'
+			}
+
+			stages {
+
+				stage('Release - Milestone') {
+					steps {
+						milestone ordinal: 3, label: "$buildName Release Promotion"
+					}
+				}
+
+				stage('Release - Checkout') {
+					steps {
+						script {
+							getRepo(false)
+						}
+					}
+				}
+
+				stage('Release - staticcheck') {
+					steps {
+						script {
+							docker.releaseDockerImage('codedx/codedx-staticcheckrunner', 'codedx/codedx-staticcheckrunner')
+						}
+					}
+				}
+
+				stage('Release - GitHub Create Version') {
+					steps {
+						script {
+							dir ('repo') {
+								withCredentials([usernamePassword(credentialsId: 'codedx-build-github', usernameVariable: 'username', passwordVariable: 'token')]) {
+
+									output = release.runSemanticRelease(token, false)
+									versionReleased = release.getNextVersion(output)
+									if (versionReleased != nextVersion) {
+										error("Build failed because released version ($versionReleased) does not match expected version ($nextVersion)")
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			post {
+				success {
+                    script {
+                        slack.info "$buildName Release stage succeeded: <${env.BUILD_URL}console|Open>"
+                    }
+				}
+				failure {
+                    script {
+                        slack.error "$buildName Release stage failed: <${env.BUILD_URL}console|Open>"
+                    }
+				}
+			}
+		}
+	}
+}
