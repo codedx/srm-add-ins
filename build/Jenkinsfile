@@ -392,7 +392,7 @@ pipeline {
 				stage('Release - blackduck') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-blackduckrunner', 'codedx/codedx-blackduckrunner')
+							release.releaseDockerImage('codedx/codedx-blackduckrunner', 'codedx/codedx-blackduckrunner', commitShort, nextVersion)
 						}
 					}
 				}
@@ -400,7 +400,7 @@ pipeline {
 				stage('Release - blackduck-dotnet') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-blackduckrunner-dotnet', 'codedx/codedx-blackduckrunner-dotnet')
+							release.releaseDockerImage('codedx/codedx-blackduckrunner-dotnet', 'codedx/codedx-blackduckrunner-dotnet', commitShort, nextVersion)
 						}
 					}
 				}
@@ -408,7 +408,7 @@ pipeline {
 				stage('Release - blackduck-go') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-blackduckrunner-go', 'codedx/codedx-blackduckrunner-go')
+							release.releaseDockerImage('codedx/codedx-blackduckrunner-go', 'codedx/codedx-blackduckrunner-go', commitShort, nextVersion)
 						}
 					}
 				}
@@ -416,7 +416,7 @@ pipeline {
 				stage('Release - blackduck-sbt') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-blackduckrunner-sbt', 'codedx/codedx-blackduckrunner-sbt')
+							release.releaseDockerImage('codedx/codedx-blackduckrunner-sbt', 'codedx/codedx-blackduckrunner-sbt', commitShort, nextVersion)
 						}
 					}
 				}
@@ -424,7 +424,7 @@ pipeline {
 				stage('Release - burpsuite') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-burpsuiterunnerbase', 'codedx/codedx-burpsuiterunnerbase')
+							release.releaseDockerImage('codedx/codedx-burpsuiterunnerbase', 'codedx/codedx-burpsuiterunnerbase', commitShort, nextVersion)
 						}
 					}
 				}
@@ -432,7 +432,7 @@ pipeline {
 				stage('Release - checkmarx') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-checkmarxrunner', 'codedx/codedx-checkmarxrunner')
+							release.releaseDockerImage('codedx/codedx-checkmarxrunner', 'codedx/codedx-checkmarxrunner', commitShort, nextVersion)
 						}
 					}
 				}
@@ -440,7 +440,7 @@ pipeline {
 				stage('Release - coverity') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-coverityrunnerbase', 'codedx/codedx-coverityrunnerbase')
+							release.releaseDockerImage('codedx/codedx-coverityrunnerbase', 'codedx/codedx-coverityrunnerbase', commitShort, nextVersion)
 						}
 					}
 				}
@@ -448,7 +448,7 @@ pipeline {
 				stage('Release - coverity-dotnet') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-dotnet', 'codedx/codedx-coverityrunnerbase-dotnet')
+							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-dotnet', 'codedx/codedx-coverityrunnerbase-dotnet', commitShort, nextVersion)
 						}
 					}
 				}
@@ -456,7 +456,7 @@ pipeline {
 				stage('Release - coverity-go') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-go', 'codedx/codedx-coverityrunnerbase-go')
+							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-go', 'codedx/codedx-coverityrunnerbase-go', commitShort, nextVersion)
 						}
 					}
 				}
@@ -464,7 +464,7 @@ pipeline {
 				stage('Release - coverity-sbt') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-sbt', 'codedx/codedx-coverityrunnerbase-sbt')
+							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-sbt', 'codedx/codedx-coverityrunnerbase-sbt', commitShort, nextVersion)
 						}
 					}
 				}
@@ -472,7 +472,7 @@ pipeline {
 				stage('Release - golangci-lint') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-golangci-lintrunner', 'codedx/codedx-golangci-lintrunner')
+							release.releaseDockerImage('codedx/codedx-golangci-lintrunner', 'codedx/codedx-golangci-lintrunner', commitShort, nextVersion)
 						}
 					}
 				}
@@ -480,7 +480,7 @@ pipeline {
 				stage('Release - gosec') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-gosecrunner', 'codedx/codedx-gosecrunner')
+							release.releaseDockerImage('codedx/codedx-gosecrunner', 'codedx/codedx-gosecrunner', commitShort, nextVersion)
 						}
 					}
 				}
@@ -488,7 +488,7 @@ pipeline {
 				stage('Release - govet') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-govetrunner', 'codedx/codedx-govetrunner')
+							release.releaseDockerImage('codedx/codedx-govetrunner', 'codedx/codedx-govetrunner', commitShort, nextVersion)
 						}
 					}
 				}
@@ -496,7 +496,7 @@ pipeline {
 				stage('Release - securitycodescan') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-securitycodescanrunner', 'codedx/codedx-securitycodescanrunner')
+							release.releaseDockerImage('codedx/codedx-securitycodescanrunner', 'codedx/codedx-securitycodescanrunner', commitShort, nextVersion)
 						}
 					}
 				}
@@ -504,7 +504,7 @@ pipeline {
 				stage('Release - staticcheck') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-staticcheckrunner', 'codedx/codedx-staticcheckrunner')
+							release.releaseDockerImage('codedx/codedx-staticcheckrunner', 'codedx/codedx-staticcheckrunner', commitShort, nextVersion)
 						}
 					}
 				}
@@ -512,7 +512,7 @@ pipeline {
 				stage('Release - zap') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-zaprunner', 'codedx/codedx-zaprunner')
+							release.releaseDockerImage('codedx/codedx-zaprunner', 'codedx/codedx-zaprunner', commitShort, nextVersion)
 						}
 					}
 				}
