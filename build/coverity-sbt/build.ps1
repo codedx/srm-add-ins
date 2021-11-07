@@ -16,4 +16,4 @@ Push-Location $PSScriptRoot
 $baseDockerImageName = "codedx-coverityrunnerbase-sbt:$imageVersion"
 Invoke-ImageBuild '../..' (get-item './Dockerfile').fullname '' $baseDockerImageName $registry $username $pwd
 
-. ../coverity/specialize.ps1 '../coverity' $baseDockerImageName "codedx-coverityrunner-sbt:$imageVersion" $registry $username $pwd
+. ../coverity/specialize.ps1 '../coverity' $baseDockerImageName "codedx-coverityrunnerbase-sbt:$imageVersion" $registry $username $pwd

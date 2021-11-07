@@ -1,5 +1,6 @@
-# NOTE: codedx-blackduckrunner handled by Code Dx build because it requires Black-Duck-Scrape.jar
-FROM codedx-blackduckrunner:v1.0
+ARG BASE=codedx-blackduckrunner:v1.0
+
+FROM $BASE
 USER root
 
 # Install .NET Core SDKs (required for NuGet analysis)

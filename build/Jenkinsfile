@@ -60,22 +60,31 @@ pipeline {
 
 				stage('Build - Compile') {
 					steps {
-						setBuildStatus(gitHubRepo, commit, 'pending', 'Building')
+						script {
+							github.setBuildStatus(gitHubRepo, commit, 'pending', 'Building')
+						}
+
 						sh 'cd "$WORKSPACE/repo" && go mod tidy && go install ./...'
 					}
 				}
 
 				stage('Build - Test') {
 					steps {
-						setBuildStatus(gitHubRepo, commit, 'pending', 'Testing')
+						script {
+							github.setBuildStatus(gitHubRepo, commit, 'pending', 'Testing')
+						}
+
 						sh 'cd "$WORKSPACE/repo" && go test ./...'
 					}
 				}
 
 				stage('Build - Analyze') {
-					when { branch 'master' }
+					when { branch 'main' }
 					steps {
-						setBuildStatus(gitHubRepo, commit, 'pending', 'Analyzing')
+						script {
+							github.setBuildStatus(gitHubRepo, commit, 'pending', 'Analyzing')
+						}
+
 						withCredentials([
 							string(credentialsId: 'codedx-internal-api-key', variable: 'API_KEY'),
 							string(credentialsId: 'codedx-internal-url', variable: 'CODEDX_URL')
@@ -112,14 +121,20 @@ pipeline {
 
 			post {
 				success {
-					setBuildStatus(gitHubRepo, commit, 'success', '')
+					script {
+						github.setBuildStatus(gitHubRepo, commit, 'success', '')
+					}
+
 					milestone ordinal: 1, label: "$buildName Build Success"
                     script {
                         slack.info "$buildName Build stage succeeded (Docker Build pending): <${env.BUILD_URL}console|Open>"
                     }
 				}
 				failure {
-					setBuildStatus(gitHubRepo, commit, 'failed', 'Build failed')
+					script {
+						github.setBuildStatus(gitHubRepo, commit, 'failed', 'Build failed')
+					}
+
                     script {
                         slack.error "$buildName Build stage failed: <${env.BUILD_URL}console|Open>"
                     }
@@ -161,11 +176,161 @@ pipeline {
 					}
 				}
 
+				stage('Docker Build - blackduck') {
+					steps {
+						script {
+							dir ('repo/build/blackduck') {
+								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - blackduck-dotnet') {
+					steps {
+						script {
+							dir ('repo/build/blackduck-dotnet') {
+								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner-dotnet', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-blackduckrunner:$commitShort"])
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - blackduck-go') {
+					steps {
+						script {
+							dir ('repo/build/blackduck-go') {
+								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner-go', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-blackduckrunner:$commitShort"])
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - blackduck-sbt') {
+					steps {
+						script {
+							dir ('repo/build/blackduck-sbt') {
+								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner-sbt', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-blackduckrunner:$commitShort"])
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - burpsuite') {
+					steps {
+						script {
+							dir ('repo/build/burpsuite') {
+								release.buildPrivateDockerImage('codedx/codedx-burpsuiterunnerbase', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - checkmarx') {
+					steps {
+						script {
+							dir ('repo/build/checkmarx') {
+								release.buildPrivateDockerImage('codedx/codedx-checkmarxrunner', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - coverity') {
+					steps {
+						script {
+							dir ('repo/build/coverity') {
+								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - coverity-dotnet') {
+					steps {
+						script {
+							dir ('repo/build/coverity-dotnet') {
+								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase-dotnet', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-coverityrunnerbase:$commitShort"])
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - coverity-go') {
+					steps {
+						script {
+							dir ('repo/build/coverity-go') {
+								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase-go', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-coverityrunnerbase:$commitShort"])
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - coverity-sbt') {
+					steps {
+						script {
+							dir ('repo/build/coverity-sbt') {
+								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase-sbt', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-coverityrunnerbase:$commitShort"])
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - golangci-lint') {
+					steps {
+						script {
+							dir ('repo/build/golangci-lint') {
+								release.buildPrivateDockerImage('codedx/codedx-golangci-lintrunner', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - gosec') {
+					steps {
+						script {
+							dir ('repo/build/gosec') {
+								release.buildPrivateDockerImage('codedx/codedx-gosecrunner', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - govet') {
+					steps {
+						script {
+							dir ('repo/build/govet') {
+								release.buildPrivateDockerImage('codedx/codedx-govetrunner', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - securitycodescan') {
+					steps {
+						script {
+							dir ('repo/build/securitycodescan') {
+								release.buildPrivateDockerImage('codedx/codedx-securitycodescanrunner', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
 				stage('Docker Build - staticcheck') {
 					steps {
 						script {
 							dir ('repo/build/staticcheck') {
-								docker.buildPrivateDockerImage('codedx/codedx-staticcheckrunner', commitShort, 'Dockerfile', '../..')
+								release.buildPrivateDockerImage('codedx/codedx-staticcheckrunner', commitShort, 'Dockerfile', '../..')
+							}
+						}
+					}
+				}
+
+				stage('Docker Build - zap') {
+					steps {
+						script {
+							dir ('repo/build/zap') {
+								release.buildPrivateDockerImage('codedx/codedx-zaprunner', commitShort, 'Dockerfile', '../..')
 							}
 						}
 					}
@@ -224,10 +389,130 @@ pipeline {
 					}
 				}
 
+				stage('Release - blackduck') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-blackduckrunner', 'codedx/codedx-blackduckrunner')
+						}
+					}
+				}
+
+				stage('Release - blackduck-dotnet') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-blackduckrunner-dotnet', 'codedx/codedx-blackduckrunner-dotnet')
+						}
+					}
+				}
+
+				stage('Release - blackduck-go') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-blackduckrunner-go', 'codedx/codedx-blackduckrunner-go')
+						}
+					}
+				}
+
+				stage('Release - blackduck-sbt') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-blackduckrunner-sbt', 'codedx/codedx-blackduckrunner-sbt')
+						}
+					}
+				}
+
+				stage('Release - burpsuite') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-burpsuiterunnerbase', 'codedx/codedx-burpsuiterunnerbase')
+						}
+					}
+				}
+
+				stage('Release - checkmarx') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-checkmarxrunner', 'codedx/codedx-checkmarxrunner')
+						}
+					}
+				}
+
+				stage('Release - coverity') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-coverityrunnerbase', 'codedx/codedx-coverityrunnerbase')
+						}
+					}
+				}
+
+				stage('Release - coverity-dotnet') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-dotnet', 'codedx/codedx-coverityrunnerbase-dotnet')
+						}
+					}
+				}
+
+				stage('Release - coverity-go') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-go', 'codedx/codedx-coverityrunnerbase-go')
+						}
+					}
+				}
+
+				stage('Release - coverity-sbt') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-sbt', 'codedx/codedx-coverityrunnerbase-sbt')
+						}
+					}
+				}
+
+				stage('Release - golangci-lint') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-golangci-lintrunner', 'codedx/codedx-golangci-lintrunner')
+						}
+					}
+				}
+
+				stage('Release - gosec') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-gosecrunner', 'codedx/codedx-gosecrunner')
+						}
+					}
+				}
+
+				stage('Release - govet') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-govetrunner', 'codedx/codedx-govetrunner')
+						}
+					}
+				}
+
+				stage('Release - securitycodescan') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-securitycodescanrunner', 'codedx/codedx-securitycodescanrunner')
+						}
+					}
+				}
+
 				stage('Release - staticcheck') {
 					steps {
 						script {
-							docker.releaseDockerImage('codedx/codedx-staticcheckrunner', 'codedx/codedx-staticcheckrunner')
+							release.releaseDockerImage('codedx/codedx-staticcheckrunner', 'codedx/codedx-staticcheckrunner')
+						}
+					}
+				}
+
+				stage('Release - zap') {
+					steps {
+						script {
+							release.releaseDockerImage('codedx/codedx-zaprunner', 'codedx/codedx-zaprunner')
 						}
 					}
 				}
