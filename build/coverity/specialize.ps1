@@ -17,7 +17,8 @@ Push-Location $PSScriptRoot
 Push-Location $coveritySoftwareDirectory
 
 # Extract Coverity version from Coverity tar file, which should be alongside this file
-$version = Get-ChildItem -Filter 'cov-analysis-linux64-*.tar.gz' -File | 
+$coveritySoftwareArchive = Get-ChildItem -Filter 'cov-analysis-linux64-*.tar.gz' -File
+$version = $coveritySoftwareArchive | 
 	Select-Object -First 1 | 
 	ForEach-Object { $_.Name -Match 'cov-analysis-linux64-(?<version>.+)\.tar\.gz' | Out-Null; $matches.version }
 
@@ -26,10 +27,24 @@ if ($null -eq $version) {
 	exit 0
 }
 
-if (-not (Test-Path 'license.dat' -PathType Leaf)) {
+$licenseFile = 'license.dat'
+if (-not (Test-Path $licenseFile -PathType Leaf)) {
 	Write-Verbose 'Skipping specialization of Coverity Docker image because a Coverity license file cannot be found'
 	exit 0
 }
+
+$workDirectory = join-path ([io.path]::GetTempPath()) ([guid]::NewGuid())
+
+Write-Verbose "Creating directory $workDirectory..."
+$workDirectoryItem = New-Item -Path $workDirectory -ItemType Directory
+
+Write-Verbose "Copying Coverity software files..."
+Copy-Item $coveritySoftwareArchive $workDirectory
+Copy-Item $licenseFile $workDirectory
+Pop-Location
+
+Write-Verbose "Creating Dockerfile..."
+Push-Location $workDirectory
 
 $dockerfilePrefix = @"
 ARG BASE=$baseImageName
@@ -64,3 +79,7 @@ $dockerfile = 'Dockerfile-specialized'
 $dockerfilePrefix + $dockerfileContext  | Out-File $dockerfile -Encoding ASCII -Force
 
 Invoke-ImageBuild '.' (get-item $dockerfile).fullname '' $imageName $registry $username $pwd
+
+Write-Verbose "Removing temporary work directory..."
+Pop-Location
+$workDirectoryItem.Delete($true)
