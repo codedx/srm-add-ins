@@ -360,7 +360,7 @@ pipeline {
 		stage('Release') {
 
 			when {
-				branch 'master'
+				branch 'main'
 				beforeInput true
 				expression { return hasNextVersion }
 			}
