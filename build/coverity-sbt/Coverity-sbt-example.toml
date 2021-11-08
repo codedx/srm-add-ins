@@ -9,7 +9,7 @@ projectFileDirectoryPatterns=['*.sbt']         # patterns (e.g., *.sln,*.csproj)
 
 [cov-configure]
 
-options=['--scala', '--java', '--javascript'] # Configure Scala, Java, and JavaScript
+options=['--scala'] # Configure Scala
 
 [cov-build] # cov-build options
 

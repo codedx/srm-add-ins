@@ -1,5 +1,5 @@
 
-packages = './...' # packages to process (for package help, run: go help packages)
+packages = './...' # packages to process (for help specifying packages, run: go help packages)
 options = []       # govet options (must not conflict with options set by Code Dx)
 
 [source-code]
