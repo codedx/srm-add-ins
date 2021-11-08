@@ -1,5 +1,3 @@
-@Library('codedx-build-feature-releasefuncs')
-
 commit = ''
 commitShort = ''
 
