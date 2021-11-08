@@ -1,7 +1,11 @@
+# NOTE: To use this add-in, you must add a licensed copy of Coverity.
+# Refer to this script for details on how to build your own Docker image:
+# https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1
+
 [source-code]
 
-relativeDirectory=''                           # source code directory specified by relative directory name (overrides projectFileDirectoryPatterns)
-projectFileDirectoryPatterns=['go.mod','*.go'] # patterns (e.g., *.sln,*.csproj) to find source code directory by largest, first file found
+relativeDirectory=''                    # source code directory specified by relative directory name (overrides projectFileDirectoryPatterns)
+projectFileDirectoryPatterns=['go.mod'] # patterns (e.g., *.sln,*.csproj) to find source code directory by largest, first file found
 
 [cov-configure]
 
