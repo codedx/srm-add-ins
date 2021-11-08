@@ -19,6 +19,13 @@ $VerbosePreference = 'Continue'
 
 . ./add-in.ps1
 
+'cov-configure','cov-build','cov-capture','cov-analyze','cov-format-errors' | ForEach-Object {
+	$command = Get-Command $_ -Type Application -ErrorAction SilentlyContinue
+	if ($null -eq $command) {
+		Exit-Script "Unable to find Coverity command $_. Does your Docker image include a licensed Coverity version? Refer to this script for details on how to build your own Docker image: https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1"
+	}
+}
+
 if ($intermediateDirectory -eq '') {
 	$intermediateDirectory = join-path (split-path $PSScriptRoot) 'idir'
 }
