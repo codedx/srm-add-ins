@@ -7,6 +7,12 @@ gitHubRepo = 'codedx/codedx-add-ins'
 nextVersion = ''
 hasNextVersion = false
 
+def setBuildStatus(repo, commit, status, description) {
+	script {
+		github.setBuildStatus(repo, commit, 'add-ins/jenkins/build', status, description)
+	}
+}
+
 def getRepo(useLFS=false) {
 
 	options = [
@@ -59,7 +65,7 @@ pipeline {
 				stage('Build - Compile') {
 					steps {
 						script {
-							github.setBuildStatus(gitHubRepo, commit, 'pending', 'Building')
+							setBuildStatus(gitHubRepo, commit, 'pending', 'Building')
 						}
 
 						sh 'cd "$WORKSPACE/repo" && go mod tidy && go install ./...'
@@ -69,7 +75,7 @@ pipeline {
 				stage('Build - Test') {
 					steps {
 						script {
-							github.setBuildStatus(gitHubRepo, commit, 'pending', 'Testing')
+							setBuildStatus(gitHubRepo, commit, 'pending', 'Testing')
 						}
 
 						sh 'cd "$WORKSPACE/repo" && go test ./...'
@@ -80,7 +86,7 @@ pipeline {
 					when { branch 'main' }
 					steps {
 						script {
-							github.setBuildStatus(gitHubRepo, commit, 'pending', 'Analyzing')
+							setBuildStatus(gitHubRepo, commit, 'pending', 'Analyzing')
 						}
 
 						withCredentials([
@@ -120,7 +126,7 @@ pipeline {
 			post {
 				success {
 					script {
-						github.setBuildStatus(gitHubRepo, commit, 'success', '')
+						setBuildStatus(gitHubRepo, commit, 'success', '')
 					}
 
 					milestone ordinal: 1, label: "$buildName Build Success"
@@ -130,7 +136,7 @@ pipeline {
 				}
 				failure {
 					script {
-						github.setBuildStatus(gitHubRepo, commit, 'failed', 'Build failed')
+						setBuildStatus(gitHubRepo, commit, 'failed', 'Build failed')
 					}
 
                     script {
