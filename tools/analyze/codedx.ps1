@@ -54,7 +54,7 @@ function Set-ToolInputDisabled([string] $baseUrl, [string] $apiKey, [string] $an
 
 function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath) {
 
-	$curlCmd = (get-command curl -Type application -erroraction silentlycontinue).source
+	$curlCmd = (get-command curl -Type application -erroraction silentlycontinue).source | select-object -first 1
 	if ($null -eq $curlCmd) {
 		throw 'Unable to find the curl application required for upload'
 	}
