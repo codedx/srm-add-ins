@@ -2,15 +2,27 @@ param (
 	[Parameter(Mandatory=$true)][string]         $codeDxBaseUrl,
 	[Parameter(Mandatory=$true)][string]         $codeDxApiKey,
 	[Parameter(Mandatory=$true)][int]            $projectId,
-	[string]                                     $inputFilePath,
-	[System.Collections.Generic.HashSet[string]] $dynamicToolsAllowed   = [System.Collections.Generic.HashSet[string]]::new(),
-	[System.Collections.Generic.HashSet[string]] $toolInputsAllowed     = [System.Collections.Generic.HashSet[string]]::new(),
-	[System.Collections.Generic.HashSet[string]] $toolConnectorsAllowed = [System.Collections.Generic.HashSet[string]]::new(),
+	[Parameter(Mandatory=$true)][string]         $inputFilePath,
+	[System.Collections.Generic.HashSet[string]] $dynamicToolsAllowed   = [Collections.Generic.HashSet[string]]::new(),
+	[System.Collections.Generic.HashSet[string]] $toolInputsAllowed     = [Collections.Generic.HashSet[string]]::new(),
+	[System.Collections.Generic.HashSet[string]] $toolConnectorsAllowed = [Collections.Generic.HashSet[string]]::new(),
 	[int]                                        $jobWaitDuration       = 15*60,
 	[switch]                                     $waitForAnalysis
 )
 
 . (join-path $PSScriptRoot 'codedx.ps1')
+
+if ($null -eq $dynamicToolsAllowed) {
+	$dynamicToolsAllowed = [Collections.Generic.HashSet[string]]::new()
+}
+
+if ($null -eq $toolInputsAllowed) {
+	$toolInputsAllowed = [Collections.Generic.HashSet[string]]::new()
+}
+
+if ($null -eq $toolConnectorsAllowed) {
+	$toolConnectorsAllowed = [Collections.Generic.HashSet[string]]::new()
+}
 
 if ($codeDxBaseUrl.EndsWith('/')) {
 	$codeDxBaseUrl = $codeDxBaseUrl.Substring(0, $codeDxBaseUrl.Length - 1)

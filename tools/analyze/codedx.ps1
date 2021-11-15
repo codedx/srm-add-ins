@@ -71,12 +71,16 @@ function Invoke-Analyze([string] $baseUrl, [string] $apiKey, [string] $analysisP
 	Invoke-RestMethod -Uri "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/analyze" -Method POST -Headers $headers
 }
 
-function Wait-CodeDxJob([string] $baseUrl, [string] $apiKey, [string] $jobId, [string] $waitDuration) {
+function Wait-CodeDxJob([string] $baseUrl, [string] $apiKey, [string] $jobId, [int] $waitDuration) {
 
 	$headers = New-Header $apiKey
 	$headers['accept']       = 'application/json'
 
-	$timeout = [datetime]::now.AddSeconds($waitDuration)
+	$timeout = [datetime]::MaxValue
+	if ($waitDuration -gt 0) {
+		$timeout = [datetime]::Now.AddSeconds($waitDuration)
+	}
+
 	do {
 		$status = Invoke-RestMethod -Uri "$codeDxBaseUrl/api/jobs/$jobId" -Headers $headers
 		
@@ -90,7 +94,7 @@ function Wait-CodeDxJob([string] $baseUrl, [string] $apiKey, [string] $jobId, [s
 		}
 
 		$sleepDurationSeconds = 5
-		Write-Verbose "Job $jobId is not yet complete with status $($status.status); sleeping for $sleepDurationSeconds seconds..."
+		Write-Verbose "Job $jobId is not yet complete with status $($status.status); sleeping for $sleepDurationSeconds seconds (timeout at $timeout)..."
 		Start-Sleep -Seconds $sleepDurationSeconds
 
 	} while ($true)
