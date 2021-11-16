@@ -1,6 +1,6 @@
 param (
-	[Parameter(Mandatory=$true)][string]         $codeDxBaseUrl,
-	[Parameter(Mandatory=$true)][string]         $codeDxApiKey,
+	[string]                                     $codeDxBaseUrl,
+	[string]                                     $codeDxApiKey,
 	[Parameter(Mandatory=$true)][int]            $projectId,
 	[Parameter(Mandatory=$true)][string]         $inputFilePath,
 	[System.Collections.Generic.HashSet[string]] $dynamicToolsAllowed   = [Collections.Generic.HashSet[string]]::new(),
@@ -11,6 +11,14 @@ param (
 )
 
 . (join-path $PSScriptRoot 'codedx.ps1')
+
+if ($codeDxBaseUrl -eq '') {
+	$codeDxBaseUrl = $Env:CODE_DX_BASE_URL
+}
+
+if ($codeDxApiKey -eq '') {
+	$codeDxApiKey = $Env:CODE_DX_API_KEY
+}
 
 if ($null -eq $dynamicToolsAllowed) {
 	$dynamicToolsAllowed = [Collections.Generic.HashSet[string]]::new()
