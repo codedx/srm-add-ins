@@ -9,6 +9,7 @@ param (
 	[int]                                        $jobWaitDuration       = 15*60,
 	[switch]                                     $waitForAnalysis
 )
+$VerbosePreference = 'Continue'
 
 . (join-path $PSScriptRoot 'codedx.ps1')
 
