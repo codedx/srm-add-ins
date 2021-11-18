@@ -1,4 +1,4 @@
-$VerbosePreference = 'Continue'
+
 $ErrorActionPreference = 'Stop'
 Set-PSDebug -Strict
 
@@ -52,14 +52,18 @@ function Set-ToolInputDisabled([string] $baseUrl, [string] $apiKey, [string] $an
 	Invoke-RestMethod -Uri "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/$inputId/tag/$tagId" -Method 'PUT' -Headers $headers -Body $body
 }
 
-function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath) {
+function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath, [switch] $verboseOutput) {
 
 	$curlCmd = (get-command curl -Type application -erroraction silentlycontinue).source | select-object -first 1
 	if ($null -eq $curlCmd) {
 		throw 'Unable to find the curl application required for upload'
 	}
 
-	$result = & $curlCmd -X POST "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/upload" -H "API-Key: $apiKey" -H "Content-Type: multipart/form-data" -F "file=@$filePath"
+	$verboseSwitch = ''
+	if ($verboseOutput) {
+		$verboseSwitch = '-v'
+	}
+	$result = & $curlCmd -X POST $verboseSwitch "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/upload" -H "API-Key: $apiKey" -H "Content-Type: multipart/form-data" -F "file=@$filePath"
 	ConvertFrom-Json $result
 }
 
