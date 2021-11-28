@@ -16,6 +16,36 @@ $VerbosePreference = 'Continue'
 
 . ./add-in.ps1
 
+function Get-ProjectAndVersion($baseUrl, $apiToken, $projectName, $versionName, $skipCertCheck) {
+
+	if (-not ($baseUrl.EndsWith('/'))) {
+		$baseUrl = "$baseUrl/"
+	}
+
+	$options = @{SkipCertificateCheck = $false}
+	if ($skipCertCheck) {
+		$options['SkipCertificateCheck'] = $true
+	}
+
+	$tokenHeader = @{'Authorization'="token $apiToken"}
+	$authenticateResponse = Invoke-WebRequest -Method POST -Uri "$($baseUrl)api/tokens/authenticate" -Headers $tokenHeader @options
+
+	$bearerJson = convertfrom-json ([text.encoding]::ascii.getstring($authenticateResponse.Content))
+	$bearerHeader = @{'Authorization'="Bearer $($bearerJson.bearerToken)"}
+
+	$projects = Invoke-WebRequest -Uri "$($baseUrl)api/risk-profile-dashboard" -Headers $bearerHeader @options
+	$projectsJson = convertfrom-json $projects.Content
+
+	$projectData = $projectsJson.projectRiskProfilePageView | ForEach-Object { $_.items } | Select-Object 'id','name' | Where-Object { $_.name -eq $projectName }
+	$projectVersions = Invoke-WebRequest -Uri "$($baseUrl)api/projects/$($projectData.id)/versions" -Headers $bearerHeader @options
+
+	$projectVersionsJson = convertfrom-json ([text.encoding]::ascii.getstring($projectVersions.Content))
+	$versionData = $projectVersionsJson | ForEach-Object { $_.items } | Select-Object 'versionName','_meta' | Where-Object { $_.versionName -eq $versionName }
+
+	$versionId = $versionData._meta.href -replace "$($baseUrl)api/projects/$($projectData.id)/versions/",""
+	$($projectData.id),$versionId
+}
+
 write-verbose "Reading scan request file ($scanRequestFilePath)..."
 $scanRequestConfig = Get-Config $scanRequestFilePath
 
@@ -75,7 +105,7 @@ if($blackDuckProjectName -ne "") {
 		write-verbose "blackduck.projectName and --detect.project.name options both set. Only one may be set"
 		throw "Invalid options"
 	}
-	$detectOptions += "--detect.project.name=`"'$blackDuckProjectName'`""
+	$detectOptions += "--detect.project.name=`"$blackDuckProjectName`""
 }
 
 if($blackDuckVersionName -ne "") {
@@ -83,7 +113,7 @@ if($blackDuckVersionName -ne "") {
 		write-verbose "blackduck.versionName and --detect.project.version.name options both set. Only one may be set"
 		throw "Invalid options"
 	}
-	$detectOptions += "--detect.project.version.name=`"'$blackDuckVersionName'`""
+	$detectOptions += "--detect.project.version.name=`"$blackDuckVersionName`""
 }
 
 $optionsYaml = $scanRequestConfig.detect.optionsYaml
@@ -113,7 +143,8 @@ java -jar /synopsys-detect.jar --blackduck.url=$blackDuckBaseUrl --blackduck.api
 # of the resulting Black Duck project
 $detectStatusFile = join-path (Get-ChildItem (join-path $outputDirectory 'runs') | Select-Object -First 1).FullName 'status/status.json'
 $detectStatusText = (Get-Content $detectStatusFile) -join "`n"
-write-verbose $detectStatusText
+
+Write-Verbose $detectStatusText
 
 if($LASTEXITCODE -ne 0) {
 	# Write the status file if detect fails
@@ -121,54 +152,16 @@ if($LASTEXITCODE -ne 0) {
 	throw "The synopsys-detect.jar run failed with exit code $LASTEXITCODE"
 }
 
-$detectStatus = ConvertFrom-Json $detectStatusText
-
 $reportOutputPath = $scanRequestConfig.request.resultfilepath
 
-# There can be multiple other locations (such as reports), but only one of them should be a BD project
-$locationRegex = '/api/projects/([A-Za-z\d\-]+)/versions/([A-Za-z\d\-]+)/components'
-
-if ($detectStatus.results.location -match $locationRegex) {
-
-	$projectId = $Matches.1
-	$versionId = $Matches.2
-	write-verbose "Step 3: Invoking Black Duck Scraper on project $projectId version $versionId"
-	$tmpDir = Join-Path $scanRequestConfig.request.workDirectory "tmp_dir"
-	java -jar /opt/codedx/blackduck/bin/Black-Duck-Scrape.jar -u $blackDuckBaseUrl -p $projectId -v $versionId -o $reportOutputPath -t $tmpDir -a $blackDuckApiToken @($scanRequestConfig.scraper.options)
-
-} else {
-
-	$now = [datetime]::now
-
-	# Create an empty file for Code Dx to import
-	$props = @"
-# $($now.ToString("ddd MMM dd HH:mm:ss zzz"))
-generated.by=CodeDx-Black Duck Hub Connector
-generated.time=$($now.subtract([datetime]::UnixEpoch).TotalSeconds)
-tool-data-provider.num-primary-inputs=0
-generated.version=0.1
-"@
-
-	$emptyDir = Join-Path $scanRequestConfig.request.workDirectory "empty"
-	New-Item $emptyDir -ItemType Container
-
-	Push-Location $emptyDir
-	$props | out-file .props
-
-	New-Item 'aux' -ItemType Container
-	Push-Location 'aux'
-
-	$emptyId = [Guid]::Empty.Guid
-
-	$blackDuckBaseUrl | out-file 'server_url.txt.data' -NoNewLine
-	$emptyId          | out-file 'project_version.txt.data' -NoNewLine
-	$emptyId          | out-file 'project_id.txt.data' -NoNewLine
-	'EXTERNAL'        | out-file "project_distribution_$emptyId.txt.data" -NoNewLine
-	'info'            | out-file 'minimum_severity.txt.data' -NoNewLine
-	'true'            | out-file 'include_operational_risks.txt.data' -NoNewLine
-	'true'            | out-file 'include_license_risks.txt.data' -NoNewLine
-	Pop-Location
-
-	# Compress-Archive calls Get-Item w/o -Force, so it cannot find "hidden" .props file
-	zip $reportOutputPath .props aux/*
+$projectAndVersion = Get-ProjectAndVersion $blackDuckBaseUrl $blackDuckApiToken $blackDuckProjectName $blackDuckVersionName $scanRequestConfig.blackduck.skipCertCheck
+if ($projectAndVersion.Length -ne 2) {
+	throw "Failed to find project ID and/or version ID for project/version $blackDuckProjectName/$blackDuckVersionName"
 }
+
+$projectId = $projectAndVersion[0]
+$versionId = $projectAndVersion[1]
+
+write-verbose "Step 3: Invoking Black Duck Scraper on project $projectId version $versionId"
+$tmpDir = Join-Path $scanRequestConfig.request.workDirectory "tmp_dir"
+java -jar /opt/codedx/blackduck/bin/Black-Duck-Scrape.jar -u $blackDuckBaseUrl -p $projectId -v $versionId -o $reportOutputPath -t $tmpDir -a $blackDuckApiToken @($scanRequestConfig.scraper.options)

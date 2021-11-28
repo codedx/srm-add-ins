@@ -6,6 +6,7 @@
 baseUrl = ""                # the base URL endpoint for the Black Duck server
 projectName = ""            # the name of the Black Duck project. If it does not already exist, it will be created
 versionName = ""            # the name of the Black Duck project version.
+skipCertCheck = false       # when true, you must use the Manage Certificates add-in feature to upload your server certificate.
 
 [source-code]
 
