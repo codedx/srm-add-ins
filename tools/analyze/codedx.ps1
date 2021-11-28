@@ -52,19 +52,16 @@ function Set-ToolInputDisabled([string] $baseUrl, [string] $apiKey, [string] $an
 	Invoke-RestMethod -Uri "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/$inputId/tag/$tagId" -Method 'PUT' -Headers $headers -Body $body
 }
 
-function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath, [switch] $verboseOutput) {
+function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath) {
 
-	$curlCmd = (get-command curl -Type application -erroraction silentlycontinue).source | select-object -first 1
-	if ($null -eq $curlCmd) {
-		throw 'Unable to find the curl application required for upload'
-	}
+	$form = @{uploadFile=(Get-ChildItem $filePath)}
 
-	$verboseSwitch = ''
-	if ($verboseOutput) {
-		$verboseSwitch = '-v'
-	}
-	$result = & $curlCmd -X POST $verboseSwitch "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/upload" -H "API-Key: $apiKey" -H "Content-Type: multipart/form-data" -F "file=@$filePath"
-	ConvertFrom-Json $result
+	Invoke-RestMethod `
+		-TimeoutSec 0 `
+		-Headers (New-Header $apiKey) `
+		-Method Post `
+		-Form $form `
+		-Uri "$baseUrl/api/analysis-prep/$analysisPrepId/upload"
 }
 
 function Invoke-Analyze([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId) {
