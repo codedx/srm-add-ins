@@ -64,7 +64,7 @@ $analysisPrep.toolConnectors | Where-Object {
 }
 
 Write-Verbose "Uploading input file $inputFilePath..."
-$result = Add-InputFile $codeDxBaseUrl $codeDxApiKey $analysisPrepId $inputFilePath
+$result = Add-InputFileCurl $codeDxBaseUrl $codeDxApiKey $analysisPrepId $inputFilePath -verboseOutput
 
 Write-Verbose "Waiting for job $($result.jobId) (timeout is $jobWaitDuration seconds)..."
 $jobStatus = Wait-CodeDxJob $codeDxBaseUrl $codeDxApiKey $result.jobId $jobWaitDuration
