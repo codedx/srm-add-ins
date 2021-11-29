@@ -14,7 +14,7 @@ function New-AnalysisPrep([string] $baseUrl, [string] $apiKey, [int] $projectId)
 
 	$body = ConvertTo-Json @{ 'projectId' = $projectId }
 
-	Invoke-RestMethod -Uri "$codeDxBaseUrl/api/analysis-prep" -Method 'POST' -Headers $headers -Body $body
+	Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep" -Method 'POST' -Headers $headers -Body $body
 }
 
 function Get-AnalysisPrep([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId) {
@@ -22,25 +22,25 @@ function Get-AnalysisPrep([string] $baseUrl, [string] $apiKey, [string] $analysi
 	$headers = New-Header $apiKey
 	$headers['accept'] = 'application/json'
 
-	Invoke-RestMethod -Uri "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId" -Headers $headers
+	Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep/$analysisPrepId" -Headers $headers
 }
 
 function Get-InputMetadata([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $inputId) {
 
 	$headers = New-Header $apiKey
-	Invoke-RestMethod -Uri "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/$inputId" -Headers $headers
+	Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep/$analysisPrepId/$inputId" -Headers $headers
 }
 
 function Set-DynamicToolDisabled([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $toolId) {
 
 	$headers = New-Header $apiKey
-	Invoke-RestMethod -Uri "$codeDxBaseUrl/x/analysis-prep/$analysisPrepId/addin/$toolId" -Method 'DELETE' -Headers $headers
+	Invoke-RestMethod -Uri "$baseUrl/x/analysis-prep/$analysisPrepId/addin/$toolId" -Method 'DELETE' -Headers $headers
 }
 
 function Set-ToolConnectorDisabled([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $connectorId) {
 
 	$headers = New-Header $apiKey
-	Invoke-RestMethod -Uri "$codeDxBaseUrl/x/analysis-prep/$analysisPrepId/connector/$connectorId" -Method 'DELETE' -Headers $headers
+	Invoke-RestMethod -Uri "$baseUrl/x/analysis-prep/$analysisPrepId/connector/$connectorId" -Method 'DELETE' -Headers $headers
 }
 
 function Set-ToolInputDisabled([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $inputId, [string] $tagId) {
@@ -49,7 +49,7 @@ function Set-ToolInputDisabled([string] $baseUrl, [string] $apiKey, [string] $an
 
 	$body = ConvertTo-Json @{ 'enabled' = $false }
 
-	Invoke-RestMethod -Uri "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/$inputId/tag/$tagId" -Method 'PUT' -Headers $headers -Body $body
+	Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep/$analysisPrepId/$inputId/tag/$tagId" -Method 'PUT' -Headers $headers -Body $body
 }
 
 function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath) {
@@ -61,6 +61,7 @@ function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPr
 		-Headers (New-Header $apiKey) `
 		-Method Post `
 		-Form $form `
+		-ContentType 'multipart/form-data' `
 		-Uri "$baseUrl/api/analysis-prep/$analysisPrepId/upload"
 }
 
@@ -69,7 +70,7 @@ function Invoke-Analyze([string] $baseUrl, [string] $apiKey, [string] $analysisP
 	$headers = New-Header $apiKey
 	$headers['accept'] = 'application/json'
 
-	Invoke-RestMethod -Uri "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/analyze" -Method POST -Headers $headers
+	Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep/$analysisPrepId/analyze" -Method POST -Headers $headers
 }
 
 function Wait-CodeDxJob([string] $baseUrl, [string] $apiKey, [string] $jobId, [int] $waitDuration) {
@@ -83,7 +84,7 @@ function Wait-CodeDxJob([string] $baseUrl, [string] $apiKey, [string] $jobId, [i
 	}
 
 	do {
-		$status = Invoke-RestMethod -Uri "$codeDxBaseUrl/api/jobs/$jobId" -Headers $headers
+		$status = Invoke-RestMethod -Uri "$baseUrl/api/jobs/$jobId" -Headers $headers
 		
 		$doneStatus = 'completed','failed','cancelled'
 		if ($doneStatus -contains $status.status) {
