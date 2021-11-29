@@ -33,6 +33,8 @@ if ($null -eq $toolConnectorsAllowed) {
 	$toolConnectorsAllowed = [Collections.Generic.HashSet[string]]::new()
 }
 
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+
 if ($codeDxBaseUrl.EndsWith('/')) {
 	$codeDxBaseUrl = $codeDxBaseUrl.Substring(0, $codeDxBaseUrl.Length - 1)
 }
