@@ -54,15 +54,21 @@ function Set-ToolInputDisabled([string] $baseUrl, [string] $apiKey, [string] $an
 
 function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath) {
 
-	$form = @{uploadFile=(Get-ChildItem $filePath)}
+	$fileItem = Get-ChildItem $filePath
+	$form = @{uploadFile=$fileItem}
 
-	Invoke-RestMethod `
+	Write-Verbose "File upload of '$fileItem' (size $($fileItem.length)) starting at $([datetime]::UtcNow) (UTC)..."
+	Try {
+		Invoke-RestMethod `
 		-TimeoutSec 0 `
 		-Headers (New-Header $apiKey) `
 		-Method Post `
 		-Form $form `
 		-ContentType 'multipart/form-data' `
 		-Uri "$baseUrl/api/analysis-prep/$analysisPrepId/upload"
+	} Finally {
+		Write-Verbose "File upload of '$fileItem' ended at $([datetime]::UtcNow) (UTC)..."
+	}
 }
 
 function Invoke-Analyze([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId) {
