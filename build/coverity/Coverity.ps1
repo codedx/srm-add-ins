@@ -43,8 +43,9 @@ $scanRequestConfig.'cov-configure'.options | ForEach-Object {
 	}
 }
 
+$sourceDir = join-path $scanRequestConfig.request.workdirectory 'source'
+
 write-verbose "Step 1: Unpacking source code..."
-$sourceDir = New-Item -ItemType Directory -Path (Join-Path ([io.path]::GetTempPath()) (split-path $sourcePath -Leaf))
 Expand-SourceArchive $sourcePath $sourceDir -restoreGitDirectory
 
 $sourceCode = $scanRequestConfig.'source-code'
