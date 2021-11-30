@@ -82,7 +82,7 @@ function Add-InputFileCurl([string] $baseUrl, [string] $apiKey, [string] $analys
 	if ($verboseOutput) {
 		$verboseSwitch = '-v'
 	}
-	$result = & $curlCmd -X POST $verboseSwitch "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/upload" -H "API-Key: $apiKey" -H "Content-Type: multipart/form-data" -F "file=@$filePath"
+	$result = & $curlCmd -X POST $verboseSwitch --trace-ascii - "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/upload" -H "API-Key: $apiKey" -H "Content-Type: multipart/form-data" -F "file=@$filePath"
 	ConvertFrom-Json $result
 }
 
