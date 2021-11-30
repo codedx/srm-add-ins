@@ -64,7 +64,14 @@ $analysisPrep.toolConnectors | Where-Object {
 }
 
 Write-Verbose "Uploading input file $inputFilePath..."
-$result = Add-InputFileCurl $codeDxBaseUrl $codeDxApiKey $analysisPrepId $inputFilePath -verboseOutput
+
+$traceFile = [io.path]::GetTempFileName()
+try {
+	$result = Add-InputFileCurl $codeDxBaseUrl $codeDxApiKey $analysisPrepId $inputFilePath ('--trace-ascii', $traceFile)
+} finally {
+	Get-Content $traceFile | Write-Verbose
+	Remove-Item $traceFile
+}
 
 Write-Verbose "Waiting for job $($result.jobId) (timeout is $jobWaitDuration seconds)..."
 $jobStatus = Wait-CodeDxJob $codeDxBaseUrl $codeDxApiKey $result.jobId $jobWaitDuration

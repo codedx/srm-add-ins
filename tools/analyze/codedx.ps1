@@ -71,18 +71,14 @@ function Add-InputFile([string] $baseUrl, [string] $apiKey, [string] $analysisPr
 	}
 }
 
-function Add-InputFileCurl([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath, [switch] $verboseOutput) {
+function Add-InputFileCurl([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $filePath, [string[]] $curlArgs) {
 
 	$curlCmd = (get-command curl -Type application -erroraction silentlycontinue).source | select-object -first 1
 	if ($null -eq $curlCmd) {
 		throw 'Unable to find the curl application required for upload'
 	}
 
-	$verboseSwitch = ''
-	if ($verboseOutput) {
-		$verboseSwitch = '-v'
-	}
-	$result = & $curlCmd -X POST $verboseSwitch --trace-ascii - "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/upload" -H "API-Key: $apiKey" -H "Content-Type: multipart/form-data" -F "file=@$filePath"
+	$result = & $curlCmd -X POST "$codeDxBaseUrl/api/analysis-prep/$analysisPrepId/upload" -H "API-Key: $apiKey" -H "Content-Type: multipart/form-data" -F "file=@$filePath" @curlArgs
 	ConvertFrom-Json $result
 }
 
