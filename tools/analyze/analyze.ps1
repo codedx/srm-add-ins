@@ -69,7 +69,7 @@ $traceFile = [io.path]::GetTempFileName()
 try {
 	$result = Add-InputFileCurl $codeDxBaseUrl $codeDxApiKey $analysisPrepId $inputFilePath ('--trace-ascii', $traceFile)
 } finally {
-	Get-Content $traceFile | Write-Verbose
+	Get-Content $traceFile -Tail 100 | Write-Verbose
 	Remove-Item $traceFile
 }
 
