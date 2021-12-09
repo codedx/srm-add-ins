@@ -30,20 +30,37 @@ function Get-ProjectAndVersion($baseUrl, $apiToken, $projectName, $versionName, 
 	$tokenHeader = @{'Authorization'="token $apiToken"}
 	$authenticateResponse = Invoke-WebRequest -Method POST -Uri "$($baseUrl)api/tokens/authenticate" -Headers $tokenHeader @options
 
-	$bearerJson = convertfrom-json ([text.encoding]::ascii.getstring($authenticateResponse.Content))
+	$bearerJson = [Text.Encoding]::ASCII.GetString($authenticateResponse.Content) | ConvertFrom-Json
 	$bearerHeader = @{'Authorization'="Bearer $($bearerJson.bearerToken)"}
 
-	$projects = Invoke-WebRequest -Uri "$($baseUrl)api/risk-profile-dashboard" -Headers $bearerHeader @options
-	$projectsJson = convertfrom-json $projects.Content
+	$projectNameQuery =  [Web.HttpUtility]::UrlEncode("name:$projectName")
+	$projects = Invoke-WebRequest -Uri "$($baseUrl)api/projects?q=$projectNameQuery" @options -Headers $bearerHeader
+	$projectsJson = [Text.Encoding]::ASCII.GetString($projects.Content) | ConvertFrom-Json
 
-	$projectData = $projectsJson.projectRiskProfilePageView | ForEach-Object { $_.items } | Select-Object 'id','name' | Where-Object { $_.name -eq $projectName }
-	$projectVersions = Invoke-WebRequest -Uri "$($baseUrl)api/projects/$($projectData.id)/versions" -Headers $bearerHeader @options
+	Write-Verbose "Found project count of $($projectsJson.totalCount)."
 
-	$projectVersionsJson = convertfrom-json ([text.encoding]::ascii.getstring($projectVersions.Content))
+	$projectItem = $projectsJson.items | Where-Object { $_.name -eq $projectName }
+	if ($null -eq $projectItem) {
+		throw "Expected to find a single project with name '$projectName'."
+	}
+
+	$projectHref = $projectItem._meta.href
+	Write-Verbose "Found project HREF $projectHref"
+
+	$projectId = $projectHref -split '/' | Select-Object -Last 1
+	$projectVersions = Invoke-WebRequest -Uri "$($baseUrl)api/projects/$projectId/versions" -Headers $bearerHeader @options
+
+	$projectVersionsJson = [Text.Encoding]::ASCII.GetString($projectVersions.Content) | ConvertFrom-Json
 	$versionData = $projectVersionsJson | ForEach-Object { $_.items } | Select-Object 'versionName','_meta' | Where-Object { $_.versionName -eq $versionName }
+	if ($null -eq $versionData) {
+		throw "Expected to find a project version with name '$versionName'."
+	}
 
-	$versionId = $versionData._meta.href -replace "$($baseUrl)api/projects/$($projectData.id)/versions/",""
-	$($projectData.id),$versionId
+	$versionHref = $versionData._meta.href
+	Write-Verbose "Found version HREF $versionHref"
+
+	$versionId = $versionHref -split '/' | Select-Object -Last 1
+	$projectId,$versionId
 }
 
 write-verbose "Reading scan request file ($scanRequestFilePath)..."
