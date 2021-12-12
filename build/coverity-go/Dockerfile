@@ -6,7 +6,7 @@ FROM $BASE as builder
 
 USER root
 
-ARG GOPACKAGE=go1.16.7.linux-amd64.tar.gz
+ARG GOPACKAGE=go1.17.5.linux-amd64.tar.gz
 RUN apt-get update && \
 	apt-get install curl -y && \
 	curl -LO https://golang.org/dl/${GOPACKAGE} && \
