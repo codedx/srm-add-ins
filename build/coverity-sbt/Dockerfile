@@ -34,6 +34,5 @@ USER coverity
 # cache SBT version as user coverity
 RUN mkdir /tmp/sbt && \
 	cd /tmp/sbt && \
-	sbt about && \
 	sbt -Dsbt.version=$SBT_VERSION about && \
 	rm -Rf /tmp/sbt

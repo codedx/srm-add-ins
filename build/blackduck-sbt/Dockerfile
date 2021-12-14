@@ -38,7 +38,6 @@ USER blackduck
 # cache SBT version as user blackduck
 RUN mkdir /tmp/sbt && \
 	cd /tmp/sbt && \
-	sbt about && \
 	sbt -Dsbt.version=$SBT_VERSION about && \
 	rm -Rf /tmp/sbt
 
