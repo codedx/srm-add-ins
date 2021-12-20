@@ -1,13 +1,16 @@
-FROM golang:1.16.2-alpine3.13 as builder
+FROM golang:1.17.5-alpine3.14 as builder
 
 WORKDIR /zap
 
 RUN apk update && apk add --no-cache curl wget xmlstarlet unzip git
 
 # Download and expand the latest weekly release
-RUN curl -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions.xml | xmlstarlet sel -t -v //url |grep -i 'zap_.*linux.tar.gz' | wget --content-disposition -i - && tar xvf *.tar.gz && \
-    mv ZAP*/* . &&  \
-    rm -R ZAP*
+RUN curl -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions.xml | xmlstarlet sel -t -v //url | grep -i WEEKLY | wget --content-disposition -i - && \
+	archive=$(ls) && \
+	unzip $archive -d ZAP && \
+	rm $archive && \
+	mv ZAP/*/* . &&  \
+	rm -R ZAP
 
 # Remove large, unwanted plugins
 RUN rm -f /zap/plugin/jxbrowser*.zap
@@ -23,7 +26,7 @@ COPY pkg pkg
 WORKDIR /opt/codedx/zap/src/cmd/zap
 RUN go mod tidy && go build -ldflags=-w
 
-FROM openjdk:17-jdk-alpine3.13
+FROM openjdk:17-jdk-alpine3.14
 
 WORKDIR /zap
 COPY --from=builder /zap .
