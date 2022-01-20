@@ -146,7 +146,7 @@ function Push-BaseSourceCodeDirectory([string] $defaultDirectory, [string] $rela
 function Expand-SourceArchive([string] $path, [string] $destinationPath, [switch] $restoreGitDirectory) {
 
 	write-verbose "Expanding $path to $destinationPath..."
-	Expand-Archive $path $destinationPath
+	Expand-Archive $path $destinationPath -Force
 
 	Get-ChildItem -LiteralPath $destinationPath -Filter '.gitdir' -Recurse -Force -Directory | ForEach-Object {
 		write-verbose "Restoring git directory '$_'..."
