@@ -19,7 +19,7 @@ RUN apk add --no-cache \
     apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache lttng-ust
 
 # Install powershell
-RUN wget -O powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.1.3/powershell-7.1.3-linux-alpine-x64.tar.gz && \
+RUN wget -O powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.2.1/powershell-7.2.1-linux-alpine-x64.tar.gz && \
 	mkdir -p /opt/microsoft/powershell/7 && \
 	tar zxf powershell.tar.gz -C /opt/microsoft/powershell/7 && \
 	chmod +x /opt/microsoft/powershell/7/pwsh && \
@@ -28,13 +28,12 @@ RUN wget -O powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/
 	rm powershell.tar.gz
 
 # Install gradle
-RUN wget -O gradle-6.8.2-bin.zip https://services.gradle.org/distributions/gradle-6.8.2-bin.zip && \
-	unzip gradle-6.8.2-bin.zip && \
+RUN wget -O gradle-bin.zip https://services.gradle.org/distributions/gradle-7.3.3-bin.zip && \
+	unzip gradle-bin.zip && \
 	mkdir -p /usr/share/gradle && \
-	mv gradle-6.8.2/* /usr/share/gradle && \
-	rm -r gradle-6.8.2 && \
-	ln -s /usr/share/gradle/bin/gradle /usr/local/bin/gradle && \
-	rm gradle-6.8.2-bin.zip
+	mv gradle-*/* /usr/share/gradle && \
+	rm -r gradle-* && \
+	ln -s /usr/share/gradle/bin/gradle /usr/local/bin/gradle
 
 RUN apk add --no-cache npm
 
