@@ -24,10 +24,10 @@ RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/ap
 	apt-get clean
 
 # Install Java
-RUN curl -LO https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u302-b08/OpenJDK8U-jdk_x64_linux_hotspot_8u302b08.tar.gz && \
-	tar xvf OpenJDK8U-jdk_x64_linux_hotspot_8u302b08.tar.gz -C /opt && \
-	rm OpenJDK8U-jdk_x64_linux_hotspot_8u302b08.tar.gz
-ENV PATH=/opt/jdk8u302-b08/bin:$PATH
+RUN curl -o OpenJDK8U-jdk_x64_linux_hotspot.tar.gz -L https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz && \
+	tar xvf OpenJDK8U-jdk_x64_linux_hotspot.tar.gz -C /opt && \
+	rm OpenJDK8U-jdk_x64_linux_hotspot.tar.gz
+ENV PATH=/opt/jdk8u322-b06/bin:$PATH
 
 USER coverity
 
