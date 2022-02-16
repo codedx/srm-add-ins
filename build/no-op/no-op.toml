@@ -38,6 +38,7 @@ echo '<report date="2021-05-27" tool="Tool" generator="Generator" version="1.0.0
 #
 postShellCmd = '''
 	echo "postShellCmd time is $(date)" > /tmp/postShellCmd.log
+	ls -laR /tmp >> /tmp/postShellCmd.log
 '''
 
 # The log file path list contains zero or more log files for the tool run. Log
