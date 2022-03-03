@@ -15,10 +15,6 @@ RUN curl -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersio
 # Remove large, unwanted plugins
 RUN rm -f /zap/plugin/jxbrowser*.zap
 
-# Fetch policies files from latest develop branch (note that there's a chance for a mismatch)
-WORKDIR /tmp/zap-develop
-RUN git clone https://github.com/zaproxy/zaproxy -b develop /tmp/zap-develop
- 
 WORKDIR /opt/codedx/zap/src
 COPY go.mod .
 COPY cmd/zap cmd/zap
@@ -30,8 +26,6 @@ FROM openjdk:17-jdk-alpine3.14
 
 WORKDIR /zap
 COPY --from=builder /zap .
-WORKDIR /root/.ZAP/policies
-COPY --from=builder /tmp/zap-develop/docker/policies .
 
 RUN apk update && apk add --no-cache libxslt ca-certificates bash netcat-openbsd firefox-esr
 WORKDIR /opt/codedx/zap/logs
