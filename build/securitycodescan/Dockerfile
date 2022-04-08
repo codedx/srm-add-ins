@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:3.1.416-buster
+FROM mcr.microsoft.com/dotnet/sdk:3.1.417-buster
 
 WORKDIR /tmp
 
