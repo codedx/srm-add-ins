@@ -32,7 +32,7 @@ RUN FILE=toml2json-linux-amd64.tar.gz && \
 
 # Install staticcheck
 RUN FILE=staticcheck_linux_amd64.tar.gz && \
-	curl -LO https://github.com/dominikh/go-tools/releases/download/2021.1.1/$FILE && \
+	curl -LO https://github.com/dominikh/go-tools/releases/download/2022.1.2/$FILE && \
 	DEST=/opt/codedx/staticcheck/tools/staticcheck && \
 	mkdir -p $DEST && \
 	tar -C $DEST --strip-components=1 -xzf $FILE && \
