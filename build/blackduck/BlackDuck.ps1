@@ -70,7 +70,7 @@ $workDirectory = $scanRequestConfig.request.workdirectory
 write-verbose "Using work directory $workDirectory"
 
 $blackDuckProjectName = $scanRequestConfig.blackduck.projectName
-$blackDuckVersionName = $scanRequestConfig.blackduck.versionName
+$blackDuckVersionName = $scanRequestConfig.blackduck.versionName -eq "" ? $scanRequestConfig.request.branchName : $scanRequestConfig.blackduck.versionName
 
 $blackDuckApiToken = Get-FileContents (join-path $workDirectory 'workflow-secrets/blackduck-credential/api-token')
 
