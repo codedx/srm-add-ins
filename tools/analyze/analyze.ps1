@@ -2,6 +2,8 @@ param (
 	[string]                                     $codeDxBaseUrl,
 	[string]                                     $codeDxApiKey,
 	[Parameter(Mandatory=$true)][int]            $projectId,
+	[string]                                     $branchName,
+	[string]                                     $parentBranchName,
 	[Parameter(Mandatory=$true)][string]         $inputFilePath,
 	[System.Collections.Generic.HashSet[string]] $dynamicToolsAllowed   = [Collections.Generic.HashSet[string]]::new(),
 	[System.Collections.Generic.HashSet[string]] $toolInputsAllowed     = [Collections.Generic.HashSet[string]]::new(),
@@ -99,7 +101,7 @@ $inputMetadata.tags | Where-Object {
 }
 
 Write-Verbose 'Invoking analysis...'
-$analysis = Invoke-Analyze $codeDxBaseUrl $codeDxApiKey $analysisPrepId
+$analysis = Invoke-Analyze $codeDxBaseUrl $codeDxApiKey $analysisPrepId $parentBranchName $branchName
 
 if ($waitForAnalysis) {
 

@@ -82,11 +82,31 @@ function Add-InputFileCurl([string] $baseUrl, [string] $apiKey, [string] $analys
 	ConvertFrom-Json $result
 }
 
-function Invoke-Analyze([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId) {
+function Invoke-Analyze([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $parentBranchName, [string] $branchName) {
 
 	$headers = New-Header $apiKey
 	$headers['accept'] = 'application/json'
 
+	if ($parentBranchName -eq "" -and $branchName -eq "") {
+
+		Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep/$analysisPrepId/analyze" -Method POST -Headers $headers
+		return
+	}
+
+	$branch = @{
+		branch = $branchName
+	} | ConvertTo-Json
+
+	if ($parentBranchName -ne "" -and $parentBranchName -ne $branchName) {
+		$branch = @{
+			branch = @{
+				name = $branchName
+				parent = $parentBranchName
+			}
+		} | ConvertTo-Json
+	}
+
+	Invoke-RestMethod -Uri "$baseUrl/x/analysis-prep/$analysisPrepId/branch" -Method PUT -Headers $headers -Body $branch
 	Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep/$analysisPrepId/analyze" -Method POST -Headers $headers
 }
 
