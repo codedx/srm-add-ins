@@ -37,12 +37,14 @@ workDirectory = "/opt/codedx/checkmarx/work"
 #
 preShellCmd = '''
     cp ../work/ca-certificates/project/* /usr/local/share/ca-certificates
+    wd=$(pwd)
     cd /usr/local/share/ca-certificates/
     # Rename all files within ca-certificates to have a .crt extension
     for f in *; do
         mv -- "$f" "${f%.*}.crt"
     done
     update-ca-certificates
+    cd $wd
 '''
 
 # The shell cmd to run as the entry point for the tool.
