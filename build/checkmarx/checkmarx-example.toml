@@ -50,7 +50,7 @@ preShellCmd = '''
 # The shell cmd to run as the entry point for the tool.
 #
 shellCmd = '''
-    chroot --userspec=checkmarx:1000 / \
+    chroot --userspec=checkmarx:1000 --skip-chdir / \
         pwsh /opt/codedx/checkmarx/bin/Checkmarx.ps1 /opt/codedx/checkmarx/work/config/request.toml
 '''
 
