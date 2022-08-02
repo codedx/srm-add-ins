@@ -37,7 +37,7 @@ COPY --from=builder /zap-git/zaproxy/docker/zap_common.py .
 COPY --from=builder /zap-git/zaproxy/docker/policies/ /home/zap/.ZAP/policies/
 COPY --from=builder /zap-git/zaproxy/docker/scripts/ /home/zap/.ZAP_D/scripts/
 
-# zap-x and Xvfb is only needed for the running ajax spider, which zap-api-scan
+# zap-x and Xvfb is only needed for running the ajax spider, which zap-api-scan
 # doesn't do, but it will only attempt to run zap-x.sh and not zap.sh
 RUN cp zap.sh zap-x.sh
 
