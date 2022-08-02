@@ -99,67 +99,8 @@ func MakeClient(apiKey string) (*zap.Interface, error) {
 
 // ConfigureContext defines a ZAP context, an authentication approach, and a list of users.
 // It returns a Context and an error if a failure occurs.
-func ConfigureContext(zap *zap.Interface, cfg *Config) (Context, error) {
+func ConfigureContext(zap *zap.Interface, cfg *Config, authScriptFile string) (Context, error) {
 
-	var ctx Context
-
-	if !cfg.isValid() {
-		return ctx, fmt.Errorf("cannot configure context because ZAP configuration is invalid")
-	}
-
-	result, err := (*zap).Context().NewContext(cfg.Context.Name)
-	if err != nil {
-		return ctx, err
-	}
-
-	ctx.ContextName = cfg.Context.Name
-	ctx.ContextID, err = getZapStringResult("contextId", result)
-	if err != nil {
-		return ctx, err
-	}
-
-	if err := addContextIncludes(cfg.Context.IncludeRegularExpressions, cfg.Context.Name, zap); err != nil {
-		return ctx, err
-	}
-
-	if err := addContextExcludes(cfg.Context.ExcludeRegularExpressions, cfg.Context.Name, zap); err != nil {
-		return ctx, err
-	}
-
-	if !cfg.isAuthenticationEnabled() {
-		return ctx, nil
-	}
-
-	var credentialString string
-
-	if cfg.useFormAuthentication() {
-
-		if err := configureFormsAuthentication(cfg.FormAuthentication, zap, &ctx); err != nil {
-			return ctx, err
-		}
-		credentialString = "password=%s&username=%s&type=UsernamePasswordAuthenticationCredentials"
-	}
-
-	if cfg.useScriptAuthentication() {
-
-		if err := configureScriptAuthentication(cfg.ScriptAuthentication, "", zap, &ctx, true); err != nil {
-			return ctx, err
-		}
-		credentialString = "Password=%s&Username=%s&type=GenericAuthenticationCredentials"
-	}
-
-	if _, err := (*zap).Authentication().SetLoggedInIndicator(ctx.ContextID, cfg.Authentication.LoginIndicatorRegex); err != nil {
-		return ctx, err
-	}
-
-	if err := addUsers(cfg, zap, &ctx, credentialString); err != nil {
-		return ctx, err
-	}
-
-	return ctx, nil
-}
-
-func ConfigureApiScanContext(zap *zap.Interface, cfg *ApiConfig, authScriptFile string) (Context, error) {
 	var ctx Context
 
 	result, err := (*zap).Context().NewContext(cfg.Context.Name)
@@ -188,6 +129,7 @@ func ConfigureApiScanContext(zap *zap.Interface, cfg *ApiConfig, authScriptFile 
 	var credentialString string
 
 	if cfg.UseFormAuthentication() {
+
 		if err := configureFormsAuthentication(cfg.FormAuthentication, zap, &ctx); err != nil {
 			return ctx, err
 		}
@@ -195,7 +137,8 @@ func ConfigureApiScanContext(zap *zap.Interface, cfg *ApiConfig, authScriptFile 
 	}
 
 	if cfg.UseScriptAuthentication() {
-		if err := configureScriptAuthentication(cfg.ScriptAuthentication, authScriptFile, zap, &ctx, false); err != nil {
+
+		if err := configureScriptAuthentication(cfg.ScriptAuthentication, authScriptFile, zap, &ctx); err != nil {
 			return ctx, err
 		}
 		credentialString = "Password=%s&Username=%s&type=GenericAuthenticationCredentials"
@@ -205,16 +148,9 @@ func ConfigureApiScanContext(zap *zap.Interface, cfg *ApiConfig, authScriptFile 
 		return ctx, err
 	}
 
-	cred := cfg.credential
-	userID, err := addUser(zap, ctx.ContextID, cred.Username, cred.Password, credentialString)
-	if err != nil {
+	if err := addUsers(cfg, zap, &ctx, credentialString); err != nil {
 		return ctx, err
 	}
-	user := User{
-		UserID:     userID,
-		Credential: *cred,
-	}
-	ctx.Users = append(ctx.Users, user)
 
 	return ctx, nil
 }
@@ -277,7 +213,7 @@ func configureFormsAuthentication(formAuth formAuthentication, zap *zap.Interfac
 	return err
 }
 
-func configureScriptAuthentication(scriptAuth scriptAuthentication, authScriptFile string, zap *zap.Interface, ctx *Context, deleteFile bool) error {
+func configureScriptAuthentication(scriptAuth scriptAuthentication, authScriptFile string, zap *zap.Interface, ctx *Context) error {
 	var xf *os.File
 	var err error
 	if authScriptFile == "" {
@@ -583,17 +519,10 @@ func SaveReport(zap *zap.Interface, xsltProgram string, outputFile string, minim
 	if err != nil {
 		return err
 	}
-	return ApplyXslt(xsltProgram, outputFile, minimumRiskCode, minimumConfidence)
+	return ApplyXslt(xsltProgram, f.Name(), minimumRiskCode, minimumConfidence)
 }
 
-func ApplyXslt(xsltProgram string, outputFile string, minimumRiskCode int, minimumConfidence int) error {
-
-	f, err := os.Open(outputFile)
-	if err != nil {
-		log.Println("save report; err4.1")
-		return err
-	}
-
+func ApplyXslt(xsltProgram string, outputFileName string, minimumRiskCode int, minimumConfidence int) error {
 	xslt := `<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
   <xsl:template match="@*|node()">
@@ -633,15 +562,15 @@ func ApplyXslt(xsltProgram string, outputFile string, minimumRiskCode int, minim
 	if strings.HasSuffix(xsltProgram, "xsltproc") {
 		cmd = exec.Command(xsltProgram,
 			"-o",
-			f.Name(),
+			outputFileName,
 			xf.Name(),
-			f.Name())
+			outputFileName)
 	} else if strings.HasSuffix(xsltProgram, "msxsl") || strings.HasSuffix(xsltProgram, "msxsl.exe") {
 		cmd = exec.Command(xsltProgram,
-			f.Name(),
+			outputFileName,
 			xf.Name(),
 			"-o",
-			f.Name())
+			outputFileName)
 	} else {
 		return fmt.Errorf("the specified xslt program (%s) is unsupported", xsltProgram)
 	}

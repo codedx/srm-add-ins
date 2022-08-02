@@ -53,7 +53,7 @@ formAntiCrossSiteRequestForgeryFieldName = "" # the anti-XSRF token field name
 formExtraPostData = ""                        # the extra data to include with login request
 
 # ignored when authentication.type is not 'scriptAuthentication'. The username and password
-# must be provided as secrets named 'username' and 'password'. Only a single set of form
+# must be provided as secrets named 'username' and 'password'. Only a single set of script
 # authentication credentials may be given.
 #
 [scriptAuthentication]
@@ -110,7 +110,7 @@ postShellCmd = '''
 # The log file path list contains zero or more log files for the tool run. Log
 # files get copied to workflow storage and are accessible from the tool service API.
 #
-logFilePaths   = ["/opt/codedx/zap/logs/tool.log", "/opt/codedx/zap/logs/zap.err.log", "/opt/codedx/zap/logs/zap.out.log", "/opt/codedx/zap/work/zap.out"]
+logFilePaths   = ["/opt/codedx/zap/logs/tool.log", "/opt/codedx/zap/logs/zap.err.log", "/opt/codedx/zap/logs/zap.out.log", "/opt/codedx/zap/bin/zap.out"]
 
 # The result file contains the tool output provided to Code Dx.
 #

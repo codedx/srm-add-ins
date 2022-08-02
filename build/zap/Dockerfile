@@ -1,16 +1,18 @@
 FROM golang:1.18.3-alpine3.15 as builder
 
+ARG ZAP_VERSION=2.11.1
+
 WORKDIR /zap
 
-RUN apk update && apk add --no-cache curl wget xmlstarlet unzip git
+RUN apk update && apk add --no-cache wget git
 
-# Download and expand the latest weekly release
-RUN curl -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions.xml | xmlstarlet sel -t -v //url | grep -i WEEKLY | wget --content-disposition -i - && \
+# Download and expand the release
+RUN wget --content-disposition https://github.com/zaproxy/zaproxy/releases/download/v${ZAP_VERSION}/ZAP_${ZAP_VERSION}_Linux.tar.gz && \
 	archive=$(ls) && \
-	unzip $archive -d ZAP && \
+	tar zxf $archive && \
 	rm $archive && \
-	mv ZAP/*/* . &&  \
-	rm -R ZAP
+	mv ZAP*/* . &&  \
+	rm -R ZAP*
 
 # Remove large, unwanted plugins
 RUN rm -f /zap/plugin/jxbrowser*.zap
@@ -23,7 +25,7 @@ WORKDIR /opt/codedx/zap/src/cmd/zap
 RUN go mod tidy && go build -ldflags=-w
 
 WORKDIR /zap-git
-RUN git clone https://github.com/zaproxy/zaproxy.git
+RUN git clone --depth 1 --branch v$ZAP_VERSION https://github.com/zaproxy/zaproxy.git
 
 # java < 15 is required as zap-api-scan and various dependencies it uses require nashorn support
 FROM eclipse-temurin:11-jdk-alpine
@@ -32,7 +34,7 @@ WORKDIR /zap
 COPY --from=builder /zap .
 COPY --from=builder /zap-git/zaproxy/docker/zap-api-scan.py .
 COPY --from=builder /zap-git/zaproxy/docker/zap_common.py .
-COPY --from=builder /zap-git/zaproxy/docker/policies/ /home/zap/.ZAP_D/policies/
+COPY --from=builder /zap-git/zaproxy/docker/policies/ /home/zap/.ZAP/policies/
 COPY --from=builder /zap-git/zaproxy/docker/scripts/ /home/zap/.ZAP_D/scripts/
 
 # zap-x and Xvfb is only needed for the running ajax spider, which zap-api-scan

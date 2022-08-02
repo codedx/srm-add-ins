@@ -36,6 +36,8 @@ const (
 	apiScanAuthScriptErrorExitCode            = 18
 	apiScanConfigFileErrorExitCode            = 19
 	apiScanFailedExitCode                     = 20
+	moveReportFailedExitCode                  = 21
+	applyXsltFailedExitCode                   = 22
 )
 
 func stopZap(quit chan int, wg *sync.WaitGroup) {
@@ -81,10 +83,6 @@ func main() {
 
 	flag.Parse()
 
-	if *scanMode != "normal" && *scanMode != "api" {
-		console.Fatalf(invalidConfigurationExitCode, "Invalid scanMode %s, must be one of 'normal' or 'api'", *scanMode)
-	}
-
 	// tee to stdout for compatibility with `kubectl logs` command
 	f := console.SetLogger("logFile", logFile, true, cannotOpenLogFileExitCode)
 	defer func() {
@@ -123,43 +121,48 @@ func main() {
 
 	sr := console.ReadFileFlagValue(scanRequestFilePathFlagName, scanRequestFilePathFlag, true, cannotParseConfigurationFileExitCode)
 
-	if *scanMode == "normal" {
-		config, err := zap.ParseConfig(sr)
-		if err != nil {
-			console.Fatal(cannotParseConfigurationFileExitCode, err)
-		}
+	config, err := zap.ParseConfig(sr, *scanMode)
+	if err != nil {
+		console.Fatal(cannotParseConfigurationFileExitCode, err)
+	}
+	if !config.IsValid(*scanMode) {
+		console.Fatal(cannotParseConfigurationFileExitCode, "cannot configure context because ZAP configuration is invalid")
+	}
+
+	if zap.IsNormalScan(*scanMode) {
 		runScan(zapPath, zapStartupWait, zapOut, zapErr, config, xsltProgram, output)
 	} else {
-		config, err := zap.ParseApiConfig(sr)
-		if err != nil {
-			console.Fatal(cannotParseConfigurationFileExitCode, err)
-		}
 		runApiScan(zapPath, zapStartupWait, zapOut, zapErr, config, xsltProgram, output)
 	}
 }
 
-func runScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *os.File, config *zap.Config, xsltProgram *string, output *string) {
-	var wg sync.WaitGroup
-
+func initZap(zapPath *string, zapStartupWait *int, outWriter io.Writer, errWriter io.Writer, wg *sync.WaitGroup) (*zaproxy.Interface, chan int) {
 	apiKey := "api-key"
 	quit := make(chan int)     // channel to keep zap go routine running until it's time to quit ZAP
 	ready := make(chan string) // channel to wait for zap initialization
 
 	wg.Add(1)
-	go zap.RunZap(*zapPath, apiKey, time.Second*time.Duration(*zapStartupWait), io.MultiWriter(os.Stdout, zapOut), io.MultiWriter(os.Stderr, zapErr), ready, quit, &wg)
+	go zap.RunZap(*zapPath, apiKey, time.Second*time.Duration(*zapStartupWait), outWriter, errWriter, ready, quit, wg)
 
 	version, ok := <-ready
 	if !ok {
-		stopZap(quit, &wg)
+		stopZap(quit, wg)
 		console.Fatal(zapAPINotReadyExitCode, "ZAP is not ready. Exiting...")
 	}
 	log.Printf("ZAP API version %s is ready", version)
 
 	client, err := zap.MakeClient(apiKey)
 	if err != nil {
-		stopZap(quit, &wg)
+		stopZap(quit, wg)
 		console.Fatalf(createZapClientFailedExitCode, "Unable to create new ZAP client with API key %s", apiKey)
 	}
+	return client, quit
+}
+
+func runScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *os.File, config *zap.Config, xsltProgram *string, output *string) {
+	var wg sync.WaitGroup
+
+	client, quit := initZap(zapPath, zapStartupWait, io.MultiWriter(os.Stdout, zapOut), io.MultiWriter(os.Stderr, zapErr), &wg)
 
 	ctx := createContext(client, config, quit, &wg)
 
@@ -184,7 +187,7 @@ func runScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *os.F
 func createContext(client *zaproxy.Interface, config *zap.Config, quit chan int, wg *sync.WaitGroup) *zap.Context {
 
 	log.Println("Creating context...")
-	ctx, err := zap.ConfigureContext(client, config)
+	ctx, err := zap.ConfigureContext(client, config, "")
 	if err != nil {
 		stopZap(quit, wg)
 		console.Fatal(createContextFailedExitCode, err)
@@ -300,20 +303,24 @@ func saveReport(client *zaproxy.Interface, config *zap.Config, xsltProgram *stri
 	log.Println("Report saved")
 }
 
-func runApiScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *os.File, config *zap.ApiConfig, xsltProgram *string, output *string) {
-	if !config.IsValid() {
-		console.Fatal(invalidConfigurationExitCode, "Invalid ZAP configuration")
-	}
-
+func runApiScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *os.File, config *zap.Config, xsltProgram *string, output *string) {
+	// The current ZAP release (2.11.1) requires some of the file path args to be given relative to
+	// the /zap/wrk/ dir. Of the arguments that runApiScan uses, this includes the context file (-n),
+	// config file (-c), and report output file (-x). Future releases of ZAP will not have this
+	// limitation and will allow fully qualified paths, including paths outside of the /zap/wrk/ dir.
+	reportFile := "/zap/wrk/report.xml"
+	reportFileArg := "report.xml"
 	apiScanArgs := []string{
 		"/zap/zap-api-scan.py",
 		"-t", config.Context.Target,
 		"-f", config.Context.Format,
-		"-x", *output,
+		"-x", reportFileArg,
 	}
 
 	if config.IsContextFileRequired() {
 		contextFile := "/zap/wrk/context.xml"
+		contextFileArg := "context.xml"
+
 		// this file name/location corresponds to the one in auth_script_hook.py
 		authScriptFile := "/zap/wrk/authScript"
 		authHooksFile := "/zap/wrk/auth_script_hook.py"
@@ -335,7 +342,7 @@ func runApiScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *o
 			}
 			apiScanArgs = append(apiScanArgs, "-U", ctx.Users[0].Credential.Username)
 		}
-		apiScanArgs = append(apiScanArgs, "-n", contextFile)
+		apiScanArgs = append(apiScanArgs, "-n", contextFileArg)
 	}
 
 	if config.Context.OpenApiHostnameOverride != "" {
@@ -348,11 +355,12 @@ func runApiScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *o
 
 	if config.ScanOptions.ApiScanConfigContent != "" {
 		configFile := "/zap/wrk/config.txt"
+		configFileArg := "config.txt"
 		err := writeConfigFile(configFile, config.ScanOptions.ApiScanConfigContent)
 		if err != nil {
 			console.Fatal(apiScanConfigFileErrorExitCode, "Unable to write ZAP API scan config file")
 		}
-		apiScanArgs = append(apiScanArgs, "-c", configFile)
+		apiScanArgs = append(apiScanArgs, "-c", configFileArg)
 	}
 
 	cmd := exec.Command(
@@ -362,7 +370,7 @@ func runApiScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *o
 	cmd.Stderr = io.MultiWriter(os.Stderr, zapErr)
 
 	if config.IsAuthenticationEnabled() && config.UseHeaderAuthentication() {
-		env := fmt.Sprintf("ZAP_AUTH_HEADER_VALUE=%s", config.GetCredential().Password)
+		env := fmt.Sprintf("ZAP_AUTH_HEADER_VALUE=%s", config.GetCredentials()[0].Password)
 		cmd.Env = append(os.Environ(), env)
 		if config.HeaderAuthentication.AuthHeaderName != "" {
 			env = fmt.Sprintf("ZAP_AUTH_HEADER=%s", config.HeaderAuthentication.AuthHeaderName)
@@ -388,48 +396,45 @@ func runApiScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *o
 
 	log.Println("Scan completed")
 
-	zap.ApplyXslt(*xsltProgram, *output, config.ReportOptions.MinRiskThreshold, config.ReportOptions.MinConfThreshold)
+	// move the report from /zap/wrk/report.xml to the specified output file
+	err = os.Rename(reportFile, *output)
+	if err != nil {
+		console.Fatal(moveReportFailedExitCode, err)
+	}
+
+	log.Println("Applying report template...")
+	err = zap.ApplyXslt(*xsltProgram, *output, config.ReportOptions.MinRiskThreshold, config.ReportOptions.MinConfThreshold)
+	if err != nil {
+		console.Fatal(applyXsltFailedExitCode, err)
+	}
+	log.Println("Teport template applied")
 }
 
 // launch and configure a ZAP instance, then export the context file and shut it down
-func createApiScanContextFile(contextFile string, authScriptFile string, zapPath *string, zapStartupWait *int, config *zap.ApiConfig) zap.Context {
+func createApiScanContextFile(contextFile string, authScriptFile string, zapPath *string, zapStartupWait *int, config *zap.Config) zap.Context {
 	log.Println("Creating ZAP context file")
 
 	var wg sync.WaitGroup
 
-	apiKey := "api-key"
-	quit := make(chan int)     // channel to keep zap go routine running until it's time to quit ZAP
-	ready := make(chan string) // channel to wait for zap initialization
-
-	wg.Add(1)
-	go zap.RunZap(*zapPath, apiKey, time.Second*time.Duration(*zapStartupWait), ioutil.Discard, ioutil.Discard, ready, quit, &wg)
-
-	version, ok := <-ready
-	if !ok {
-		stopZap(quit, &wg)
-		console.Fatal(zapAPINotReadyExitCode, "ZAP is not ready. Exiting...")
-	}
-	log.Printf("ZAP API version %s is ready", version)
-
-	client, err := zap.MakeClient(apiKey)
-	if err != nil {
-		stopZap(quit, &wg)
-		console.Fatalf(createZapClientFailedExitCode, "Unable to create new ZAP client with API key %s", apiKey)
-	}
+	client, quit := initZap(zapPath, zapStartupWait, ioutil.Discard, ioutil.Discard, &wg)
 
 	log.Println("Creating context...")
-	ctx, err := zap.ConfigureApiScanContext(client, config, authScriptFile)
+	ctx, err := zap.ConfigureContext(client, config, authScriptFile)
 	if err != nil {
 		stopZap(quit, &wg)
 		console.Fatal(createContextFailedExitCode, err)
 	}
 
-	(*client).Context().ExportContext(ctx.ContextName, contextFile)
+	_, err = (*client).Context().ExportContext(ctx.ContextName, contextFile)
+	if err != nil {
+		stopZap(quit, &wg)
+		console.Fatal(createContextFailedExitCode, err)
+	}
 
 	log.Println("Stopping ZAP...")
 	stopZap(quit, &wg)
 
-	log.Println("ZAP auth context file created")
+	log.Println("ZAP context file created")
 
 	return ctx
 }
