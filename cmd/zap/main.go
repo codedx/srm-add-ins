@@ -126,7 +126,7 @@ func main() {
 		console.Fatal(cannotParseConfigurationFileExitCode, err)
 	}
 	if !config.IsValid(*scanMode) {
-		console.Fatal(cannotParseConfigurationFileExitCode, "cannot configure context because ZAP configuration is invalid")
+		console.Fatal(invalidConfigurationExitCode, "cannot configure context because ZAP configuration is invalid")
 	}
 
 	if zap.IsNormalScan(*scanMode) {
