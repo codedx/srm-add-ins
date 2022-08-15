@@ -1,4 +1,4 @@
-FROM golang:1.18.3-alpine3.15 as builder
+FROM golang:1.18.5-alpine3.15 as builder
 
 WORKDIR /zap
 

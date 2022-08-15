@@ -1,4 +1,4 @@
-FROM golang:1.18.3-buster as builder
+FROM golang:1.18.5-buster as builder
 
 WORKDIR /tmp/build
 COPY go.mod .
@@ -17,7 +17,7 @@ COPY build/burpsuite .
 WORKDIR /tmp/build/burpsuite/extender
 RUN mvn package
 
-FROM mcr.microsoft.com/powershell:lts-debian-10-20220318
+FROM mcr.microsoft.com/powershell:lts-debian-10
 
 RUN apt update && mkdir -p /usr/share/man/man1 && apt install -y default-jre curl
 

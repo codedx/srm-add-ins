@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/powershell:7.2.2-alpine-3.13-20220318
+FROM mcr.microsoft.com/powershell:7.2-alpine-3.13
 
 WORKDIR /opt/codedx/checkmarx/work/config
 WORKDIR /opt/codedx/checkmarx/work/output
