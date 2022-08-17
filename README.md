@@ -99,3 +99,9 @@ The TOML for this Add-In is located [here](./build/staticcheck/staticcheck-examp
 The TOML for this Add-In is located [here](./build/zap/zap-example.toml).
 
 ![ZAP](./docs/ZAP.PNG)
+
+# ZAP API
+
+The TOML for this Add-In is located [here](./build/zap/zap-api-scan-example.toml).
+
+![ZAP](./docs/ZAPAPI.PNG)
