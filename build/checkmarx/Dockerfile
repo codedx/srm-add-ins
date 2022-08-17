@@ -7,9 +7,10 @@ WORKDIR /opt/codedx/checkmarx/bin
 COPY build/checkmarx/Checkmarx.ps1 .
 COPY build/common/add-in.ps1 .
 
-RUN  apk update && apk add curl
+RUN apt-get update
+RUN apt-get install -y curl
 
-RUN FILE=toml2json-linux-alpine.tar.gz && \
+RUN FILE=toml2json-linux-amd64.tar.gz && \
 	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.0.0/$FILE && \
 	DEST=/opt/codedx/checkmarx/bin && \
 	mkdir -p $DEST && \
@@ -18,9 +19,9 @@ RUN FILE=toml2json-linux-alpine.tar.gz && \
 
 ENV PATH=/opt/codedx/checkmarx/bin:${PATH}
 
-RUN adduser -h /home/checkmarx -s /bin/sh -D checkmarx -u 1000
+RUN useradd -m --shell /bin/sh checkmarx --uid 1000
 RUN chown -R checkmarx:checkmarx /opt/codedx/checkmarx
 
-USER 1000
+USER 0
 
 CMD ["sh"]
