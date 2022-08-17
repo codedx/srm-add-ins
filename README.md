@@ -102,6 +102,6 @@ The TOML for this Add-In is located [here](./build/zap/zap-example.toml).
 
 # ZAP API
 
-The TOML for this Add-In is located [here](./build/zap/zap-api-scan-example).
+The TOML for this Add-In is located [here](./build/zap/zap-api-scan-example.toml).
 
 ![ZAP](./docs/ZAPAPI.PNG)
