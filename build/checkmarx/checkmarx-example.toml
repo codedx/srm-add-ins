@@ -18,7 +18,7 @@ checkScanStatusDelay = 60   # the delay in seconds between requests to fetch sca
 
 # The image name contains the Docker image that handles this scan request file.
 #
-imageName = "codedx-checkmarxrunner:v1.0"
+imageName = "codedx/codedx-checkmarxrunner:v1.26.0"
 
 # The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
 # file, and the exit code file. The user running the Docker image *must* have write access
