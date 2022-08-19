@@ -210,10 +210,10 @@ pipeline {
 					}
 				}
 
-				stage('Docker Build - blackduck-sbt') {
+				stage('Docker Build - blackduck-sbt-java8') {
 					steps {
 						script {
-							dir ('repo/build/blackduck-sbt') {
+							dir ('repo/build/blackduck-sbt-java8') {
 								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner-sbt', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-blackduckrunner:$commitShort"])
 							}
 						}
@@ -270,10 +270,10 @@ pipeline {
 					}
 				}
 
-				stage('Docker Build - coverity-sbt') {
+				stage('Docker Build - coverity-sbt-java8') {
 					steps {
 						script {
-							dir ('repo/build/coverity-sbt') {
+							dir ('repo/build/coverity-sbt-java8') {
 								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase-sbt', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-coverityrunnerbase:$commitShort"])
 							}
 						}
@@ -417,7 +417,7 @@ pipeline {
 					}
 				}
 
-				stage('Release - blackduck-sbt') {
+				stage('Release - blackduck-sbt-java8') {
 					steps {
 						script {
 							release.releaseDockerImage('codedx/codedx-blackduckrunner-sbt', 'codedx/codedx-blackduckrunner-sbt', commitShort, nextVersion)
@@ -465,7 +465,7 @@ pipeline {
 					}
 				}
 
-				stage('Release - coverity-sbt') {
+				stage('Release - coverity-sbt-java8') {
 					steps {
 						script {
 							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-sbt', 'codedx/codedx-coverityrunnerbase-sbt', commitShort, nextVersion)

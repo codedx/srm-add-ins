@@ -18,7 +18,7 @@ The TOML for this Add-In is located [here](./build/blackduck-go/blackduck-go-exa
 
 # Black Duck (sbt)
 
-The TOML for this Add-In is located [here](./build/blackduck-sbt/blackduck-sbt-example.toml).
+The TOML for this Add-In is located [here](./build/blackduck-sbt-java8/blackduck-sbt-example.toml).
 
 ![Black Duck (sbt)](./docs/Black%20Duck%20(sbt).PNG)
 
@@ -48,7 +48,7 @@ The TOML for this Add-In is located [here](./build/coverity-go/Coverity-go-examp
 
 # Coverity (sbt)
 
-The TOML for this Add-In is located [here](./build/coverity-sbt/Coverity-sbt-example.toml).
+The TOML for this Add-In is located [here](./build/coverity-sbt-java8/Coverity-sbt-example.toml).
 
 ![Coverity (sbt)](./docs/Coverity%20(sbt).PNG)
 
