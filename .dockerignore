@@ -1,6 +1,7 @@
 *
 !build/blackduck
-!build/blackduck-sbt
+!build/blackduck-sbt-java8
+!build/blackduck-sbt-java11
 !build/burpsuite
 !build/checkmarx
 !build/common

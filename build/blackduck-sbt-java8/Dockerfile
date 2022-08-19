@@ -43,8 +43,8 @@ RUN mkdir /tmp/sbt && \
 
 # add SBT dependency graph plugin required by Detect
 WORKDIR /home/blackduck/.sbt/0.13/plugins
-COPY build/blackduck-sbt/plugins.sbt .
+COPY build/blackduck-sbt-java8/plugins.sbt .
 WORKDIR /home/blackduck/.sbt/1.0/plugins
-COPY build/blackduck-sbt/plugins.sbt .
+COPY build/blackduck-sbt-java8/plugins.sbt .
 
 WORKDIR /opt/codedx/blackduck/bin
