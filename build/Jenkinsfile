@@ -501,7 +501,7 @@ pipeline {
 					}
 				}
 
-				stage('Release - coverity-sbt-java8') {
+				stage('Release - coverity-sbt-java11') {
 					steps {
 						script {
 							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-sbt-java11', 'codedx/codedx-coverityrunnerbase-sbt-java11', commitShort, nextVersion)
