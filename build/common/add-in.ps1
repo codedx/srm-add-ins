@@ -149,8 +149,17 @@ function Expand-SourceArchive([string] $path, [string] $destinationPath, [switch
 	Expand-Archive $path $destinationPath -Force
 
 	Get-ChildItem -LiteralPath $destinationPath -Filter '.gitdir' -Recurse -Force -Directory | ForEach-Object {
-		write-verbose "Restoring git directory '$_'..."
-		Rename-Item $_ '.git'
+
+		$gitDirReplacement = $_
+
+		$gitDirCurrent = Join-Path (Split-Path $gitDirReplacement) '.git'
+		if (Test-Path $gitDirCurrent -PathType Container) {
+			write-verbose "Removing current git directory '$gitDirCurrent'..."
+			Remove-Item $gitDirCurrent -Recurse -Force
+		}
+
+		write-verbose "Restoring git directory '$gitDirReplacement'..."
+		Rename-Item $gitDirReplacement '.git'
 	}
 }
 
