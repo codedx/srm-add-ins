@@ -58,6 +58,8 @@ pipeline {
 							commit = getRepo(false)
 							currentBuild.displayName = commit
 							commitShort = "${commit.substring(0, 10)}"
+
+							analyze.packageRepo("$WORKSPACE/repo", "$WORKSPACE/repo.zip")
 						}
 					}
 				}
@@ -93,16 +95,10 @@ pipeline {
 							string(credentialsId: 'codedx-internal-api-key', variable: 'API_KEY'),
 							string(credentialsId: 'codedx-internal-url', variable: 'CODEDX_URL')
 						]) {
-							step([
-								$class: 'CodeDxPublisher',
-								excludedSourceAndBinaryFiles: '',
-								key: "$API_KEY",
-								projectId: '10',
-								sourceAndBinaryFiles: '**',
-								url: "$CODEDX_URL",
-								analysisName: "Build [${currentBuild.displayName[0..8]}]($BUILD_URL)",
-								analysisResultConfiguration: [failureOnlyNew: false, failureSeverity: 'High', numBuildsInGraph: 25, unstableOnlyNew: false, unstableSeverity: 'None']
-							])
+							script {
+								tools = '@("Checkstyle","ErrCheck","Go Vet","GoLint","GoSec","IneffAssign","PMD","Pylint","Staticcheck")'
+								analyze.runAnalysis(CODEDX_URL, API_KEY, 10, "$WORKSPACE/repo.zip", '@()', tools, '@()', 900, false)
+							}
 						}
 					}
 				}
