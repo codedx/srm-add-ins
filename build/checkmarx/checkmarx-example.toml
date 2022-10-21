@@ -11,8 +11,11 @@
 baseUrl = ""                # the base URL endpoint for the Checkmarx scanner
 projectId = 0               # the Checkmarx-assigned ID of a project created by the Checkmarx software at the base URL
 
+tokenLifetimeInSeconds = 3000 # the number of seconds to consider a token valid
+
 [scan]
 checkScanStatusDelay = 60   # the delay in seconds between requests to fetch scan status
+isIncremental        = false # whether to run an incremental instead of a full scan
 
 [request] # (reserved for Code Dx use)
 
