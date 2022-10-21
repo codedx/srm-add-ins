@@ -180,6 +180,10 @@ while ($getReportStatusResponse.status.value -ne 'Created') {
 	$getReportStatusResponse = Invoke-RestMethod -Uri $getReportStatusUrl `
 		-Method Get `
 		-Header (& $authorizationHeader)
+
+	if ($getReportStatusResponse.status.value -eq 'Failed') {
+		throw 'The report is unavailable with a Failed status'
+	}
 }
 
 write-verbose 'Step: Fetching XML report...'
@@ -194,8 +198,9 @@ write-verbose "Saving report to $reportOutputPath..."
 
 # Due to 'Invoke-RestMethod' possibly converting a string response into a more representative data type, and we want to work with a String,
 # convert XML back to String
+$fetchReportStrResponse = $fetchReportResponse.ToString()
 if ($fetchReportResponse -is [xml]) {
-	[string] $fetchReportStrResponse = $fetchReportResponse.OuterXml
+	$fetchReportStrResponse = $fetchReportResponse.OuterXml
 }
 
 $reportStart = $fetchReportStrResponse.IndexOf('<?xml ')
