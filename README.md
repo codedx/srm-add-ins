@@ -2,7 +2,7 @@
 
 New Code Dx deployments will include all available Code Dx Add-Ins. You can update existing Code Dx instances by registering Add-Ins using the configuration details in the sections below.
 
-For details on creating your own Code Dx Add-Ins, refer to the Add-In Walkthrough section of the [Tool Orchestration](https://community.synopsys.com/s/document-item?bundleId=codedx&topicId=user_guide%2FAnalysis%2Ftool-orchestration.html&_LANG=enus) documentation.
+For details on creating your own Code Dx Add-Ins, refer to the "Walkthrough: Add Tool" section of the [Tool Orchestration](https://community.synopsys.com/s/document-item?bundleId=codedx&topicId=user_guide%2FAnalysis%2Ftool-orchestration.html&_LANG=enus) documentation.
 
 ## Black Duck (.NET Core)
 
