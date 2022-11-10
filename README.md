@@ -40,17 +40,23 @@ The TOML for this Add-In is located [here](./build/coverity-dotnet/Coverity-dotn
 
 ![Coverity (.NET Core)](./docs/Coverity%20(.NET%20Core).PNG)
 
+>Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image.
+
 # Coverity (Go)
 
 The TOML for this Add-In is located [here](./build/coverity-go/Coverity-go-example.toml).
 
 ![Coverity (Go)](./docs/Coverity%20(Go).PNG)
 
+>Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image.
+
 # Coverity (sbt)
 
 The TOML for this Add-In is located [here](./build/coverity-sbt-java8/Coverity-sbt-example.toml).
 
 ![Coverity (sbt)](./docs/Coverity%20(sbt).PNG)
+
+>Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image.
 
 # Errcheck
 
