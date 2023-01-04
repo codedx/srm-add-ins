@@ -85,3 +85,6 @@ logFilePaths   = ["/opt/codedx/zap/logs/tool.log", "/opt/codedx/zap/logs/zap.err
 #
 resultFilePath = "/opt/codedx/zap/work/output/zap.output.xml"
 
+# The Intelligent Orchestration security activities supported by this tool (e.g., sca, sast, dast)
+#
+securityActivities = ['dast']

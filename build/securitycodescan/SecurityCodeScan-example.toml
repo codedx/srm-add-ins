@@ -35,3 +35,6 @@ shellCmd = '''
 #
 resultFilePath = "/opt/codedx/securitycodescan/work/output/securitycodescan.output"
 
+# The Intelligent Orchestration security activities supported by this tool (e.g., sca, sast, dast)
+#
+securityActivities = ['sast']

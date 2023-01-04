@@ -52,3 +52,7 @@ shellCmd =  '''
 # The result file contains the tool output provided to Code Dx.
 #
 resultFilePath = "/opt/codedx/blackduck/work/output/blackduck.output.zip"
+
+# The Intelligent Orchestration security activities supported by this tool (e.g., sca, sast, dast)
+#
+securityActivities = ['sca']

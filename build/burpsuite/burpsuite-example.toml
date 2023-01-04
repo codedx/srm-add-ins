@@ -97,3 +97,7 @@ shellCmd = '''
 # The result file contains the tool output provided to Code Dx.
 #
 resultFilePath = "/opt/codedx/burpsuite/work/output/burpsuite.output.xml"
+
+# The Intelligent Orchestration security activities supported by this tool (e.g., sca, sast, dast)
+#
+securityActivities = ['dast']

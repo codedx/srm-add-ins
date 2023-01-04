@@ -41,3 +41,6 @@ shellCmd = '''
 #
 resultFilePath = "/opt/codedx/golangci-lint/work/output/go-lint.results"
 
+# The Intelligent Orchestration security activities supported by this tool (e.g., sca, sast, dast)
+#
+securityActivities = ['sast']
