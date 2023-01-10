@@ -2,6 +2,8 @@
 Set-PSDebug -Strict
 $VerbosePreference = 'Continue'
 
+# Use "Legacy" argument passing to avoid errors from conditional empty string arguments
+$PSNativeCommandArgumentPassing='Legacy'
 
 function Invoke-DockerBuild([Parameter(Mandatory=$true)][string] $dockerImageName,
 	[string] $dockerfilePath = './Dockerfile',
