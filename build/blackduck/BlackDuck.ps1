@@ -16,6 +16,12 @@ $VerbosePreference = 'Continue'
 
 . ./add-in.ps1
 
+function Get-ProjectVersions([string] $baseUrl, $bearerHeader, $options, [string] $projectId, [int] $limit) {
+
+	$projectVersions = Invoke-WebRequest -Uri "$($baseUrl)api/projects/$projectId/versions?limit=$limit" -Headers $bearerHeader @options
+	[Text.Encoding]::ASCII.GetString($projectVersions.Content) | ConvertFrom-Json
+}
+
 function Get-ProjectAndVersion($baseUrl, $apiToken, $projectName, $versionName, $skipCertCheck) {
 
 	if (-not ($baseUrl.EndsWith('/'))) {
@@ -48,9 +54,15 @@ function Get-ProjectAndVersion($baseUrl, $apiToken, $projectName, $versionName, 
 	Write-Verbose "Found project HREF $projectHref"
 
 	$projectId = $projectHref -split '/' | Select-Object -Last 1
-	$projectVersions = Invoke-WebRequest -Uri "$($baseUrl)api/projects/$projectId/versions" -Headers $bearerHeader @options
+	$projectVersionsJson = Get-ProjectVersions $baseUrl $bearerHeader $options $projectId 1
 
-	$projectVersionsJson = [Text.Encoding]::ASCII.GetString($projectVersions.Content) | ConvertFrom-Json
+	$totalProjectVersions = $projectVersionsJson.totalCount
+	Write-Verbose "Found $totalProjectVersions project version(s)"
+
+	if ($totalProjectVersions -gt 1) {
+		$projectVersionsJson = Get-ProjectVersions $baseUrl $bearerHeader $options $projectId $totalProjectVersions
+	}
+
 	$versionData = $projectVersionsJson | ForEach-Object { $_.items } | Select-Object 'versionName','_meta' | Where-Object { $_.versionName -eq $versionName }
 	if ($null -eq $versionData) {
 		throw "Expected to find a project version with name '$versionName'."
