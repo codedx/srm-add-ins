@@ -1,4 +1,4 @@
-FROM codedx/codedx-blackduckrunnerbase:v2022.10.3
+FROM codedx/codedx-blackduckrunnerbase:v2023.1.0
 USER root
 
 # Install .NET and powershell requirements
