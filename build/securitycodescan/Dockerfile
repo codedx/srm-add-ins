@@ -1,14 +1,6 @@
-FROM mcr.microsoft.com/dotnet/sdk:3.1.426-buster
+FROM mcr.microsoft.com/dotnet/sdk:6.0.405
 
 WORKDIR /tmp
-
-# Install .NET Core SDK 2.1 (.NET Core 3.1 and .NET Core 2.1 have LTS release status as of 2/3/2020 - https://dotnet.microsoft.com/download/dotnet-core)
-RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    apt-get update && \
-    apt-get install -y apt-transport-https && \
-    apt-get update && \
-    apt-get install -y dotnet-sdk-2.1
 
 # Install PowerShell Core
 RUN apt-get update && \
