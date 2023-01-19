@@ -3,12 +3,12 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0.405
 WORKDIR /tmp
 
 # Install PowerShell Core
-RUN apt-get update && \
-	apt-get install -y curl gnupg apt-transport-https && \
+RUN apt update && \
+	apt install -y curl gnupg apt-transport-https && \
 	curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-	sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-debian-stretch-prod stretch main" > /etc/apt/sources.list.d/microsoft.list' && \
-	apt-get update && \
-	apt-get install -y --allow-unauthenticated powershell
+	sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
+	apt update && \
+	apt install -y powershell
 
 # Create a directory to store tool findings
 WORKDIR /opt/codedx/securitycodescan/work/output
