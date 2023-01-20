@@ -38,11 +38,11 @@ if ($null -ne $sourceCode) {
 }
 $sourceDir = Push-BaseSourceCodeDirectory $sourceDir $relativeDirectory $projectFileDirectoryPatterns
 
-write-verbose "Step 3: Add SecurityCodeScan.VS2017 package to projects..."
+write-verbose "Step 3: Add SecurityCodeScan.VS2019 package to projects..."
 $projectFiles = Get-ChildItem -include '*.csproj','*.vbproj','*.fsproj' -recurse
 $projectFiles | foreach-object {
 	$projectPath = $_.FullName
-	dotnet add $projectPath package SecurityCodeScan.VS2017
+	dotnet add $projectPath package SecurityCodeScan.VS2019
 	if ($LASTEXITCODE -ne 0) {
 		Exit-Script "Failed to add Security Code Scan to project $projectPath ($LASTEXITCODE)"
 	}
