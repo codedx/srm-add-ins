@@ -58,11 +58,11 @@ The TOML for this Add-In is located [here](./build/coverity-sbt-java8/Coverity-s
 
 >Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image.
 
-# Errcheck
+# ErrCheck
 
 The TOML for this Add-In is located [here](./build/golangci-lint/golangci-lint-errorcheck-example.toml).
 
-![Errcheck](./docs/Errcheck.PNG)
+![ErrCheck](./docs/ErrCheck.PNG)
 
 # Go Vet
 
@@ -70,17 +70,17 @@ The TOML for this Add-In is located [here](./build/govet/govet-example.toml).
 
 ![Go Vet](./docs/Go%20Vet.PNG)
 
-# Golint
+# GoLint
 
 The TOML for this Add-In is located [here](./build/golangci-lint/golangci-lint-golint-example.toml).
 
-![Golint](./docs/Golint.PNG)
+![GoLint](./docs/GoLint.PNG)
 
-# Gosec
+# GoSec
 
 The TOML for this Add-In is located [here](./build/gosec/gosec-example.toml).
 
-![Gosec](./docs/Gosec.PNG)
+![GoSec](./docs/GoSec.PNG)
 
 # Ineffassign
 
