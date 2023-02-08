@@ -31,13 +31,9 @@ RUN FILE=toml2json-linux-amd64.tar.gz && \
 	rm $FILE
 
 # Install gosec
-ARG GOSEC_VERSION=2.11.0
-RUN FILE=gosec_${GOSEC_VERSION}_linux_amd64.tar.gz && \
-	curl -LO https://github.com/securego/gosec/releases/download/v${GOSEC_VERSION}/$FILE && \
-	DEST=/opt/codedx/gosec/tools/gosec && \
-	mkdir -p $DEST && \
-	tar -C $DEST -xzf $FILE && \
-	rm $FILE
+RUN go install github.com/securego/gosec/v2/cmd/gosec@latest && \
+	mkdir /opt/codedx/gosec/tools/gosec && \
+	cp $GOPATH/bin/gosec /opt/codedx/gosec/tools/gosec
 
 ENV PATH=/opt/codedx/gosec/tools/toml2json:/opt/codedx/gosec/tools/gosec:${PATH}
 
