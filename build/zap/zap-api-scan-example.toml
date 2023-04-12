@@ -63,7 +63,7 @@ authenticationScriptContent = ""              # the ZEST script for script authe
 
 # The image name contains the Docker image that handles this scan request file.
 #
-imageName = "codedx/codedx-zaprunner:v1.33.0"
+imageName = "codedx/codedx-zaprunner:v1.35.0"
 
 # The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
 # file, and the exit code file. The user running the Docker image *must* have write access

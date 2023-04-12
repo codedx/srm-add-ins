@@ -71,7 +71,7 @@ apiPort = 2727                                                       # the port 
 # Docker image container your licensed, activated copy of Burp Suite. Refer to
 # the Code Dx User Guide for more details.
 #
-imageName = "codedx/codedx-burpsuiterunnerbase:v1.33.0"
+imageName = "codedx/codedx-burpsuiterunnerbase:v1.35.0"
 
 # The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
 # file, and the exit code file. The user running the Docker image *must* have write access
