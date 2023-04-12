@@ -4,23 +4,21 @@ New Code Dx deployments will include all available Code Dx Add-Ins. You can upda
 
 For details on creating your own Code Dx Add-Ins, refer to the "Walkthrough: Add Tool" section of the [Tool Orchestration](https://community.synopsys.com/s/document-item?bundleId=codedx&topicId=user_guide%2FAnalysis%2Ftool-orchestration.html&_LANG=enus) documentation.
 
-## Black Duck (.NET Core)
+## Black Duck
 
-The TOML for this Add-In is located [here](./build/blackduck-dotnet/blackduck-dotnet-example.toml).
+The TOML for this Add-In is located [here](./build/blackduck-dotnet/blackduck-example.toml).
 
-![Black Duck (.NET Core)](./docs/Black%20Duck%20(.NET%20Core).PNG)
+>Note: Refer to the [Dockerfile](./build/blackduck/Dockerfile) for the list of installed detectors, and derive Docker images as necessary to support non-rapid scans.
 
-# Black Duck (Go)
+![Black Duck](./docs/BlackDuck.PNG)
 
-The TOML for this Add-In is located [here](./build/blackduck-go/blackduck-go-example.toml).
+## Black Duck Rapid Scan
 
-![Black Duck (Go)](./docs/Black%20Duck%20(Go).PNG)
+The TOML for this Add-In is located [here](./build/blackduck/blackduck-rapid-scan-example.toml).
 
-# Black Duck (sbt)
+>Note: Refer to the [Dockerfile](./build/blackduck/Dockerfile) for the list of installed detectors.
 
-The TOML for this Add-In is located [here](./build/blackduck-sbt-java8/blackduck-sbt-example.toml).
-
-![Black Duck (sbt)](./docs/Black%20Duck%20(sbt).PNG)
+![Black Duck Rapid Scan](./docs/BlackDuckRapidScan.PNG)
 
 # Burp Suite
 
@@ -34,29 +32,11 @@ The TOML for this Add-In is located [here](./build/checkmarx/checkmarx-example.t
 
 ![Checkmarx](./docs/Checkmarx.PNG)
 
-# Coverity (.NET Core)
+# Coverity
 
 The TOML for this Add-In is located [here](./build/coverity-dotnet/Coverity-dotnet-example.toml).
 
-![Coverity (.NET Core)](./docs/Coverity%20(.NET%20Core).PNG)
-
->Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image.
-
-# Coverity (Go)
-
-The TOML for this Add-In is located [here](./build/coverity-go/Coverity-go-example.toml).
-
-![Coverity (Go)](./docs/Coverity%20(Go).PNG)
-
->Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image.
-
-# Coverity (sbt)
-
-The TOML for this Add-In is located [here](./build/coverity-sbt-java8/Coverity-sbt-example.toml).
-
-![Coverity (sbt)](./docs/Coverity%20(sbt).PNG)
-
->Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image.
+>Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image. The resulting Docker image will support buildless scans via cov-capture, and you can derive additional Docker images to run builds with cov-build.
 
 # ErrCheck
 

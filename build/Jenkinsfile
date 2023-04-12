@@ -186,46 +186,6 @@ pipeline {
 					}
 				}
 
-				stage('Docker Build - blackduck-dotnet') {
-					steps {
-						script {
-							dir ('repo/build/blackduck-dotnet') {
-								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner-dotnet', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-blackduckrunner:$commitShort"])
-							}
-						}
-					}
-				}
-
-				stage('Docker Build - blackduck-go') {
-					steps {
-						script {
-							dir ('repo/build/blackduck-go') {
-								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner-go', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-blackduckrunner:$commitShort"])
-							}
-						}
-					}
-				}
-
-				stage('Docker Build - blackduck-sbt-java8') {
-					steps {
-						script {
-							dir ('repo/build/blackduck-sbt-java8') {
-								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner-sbt', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-blackduckrunner:$commitShort"])
-							}
-						}
-					}
-				}
-
-				stage('Docker Build - blackduck-sbt-java11') {
-					steps {
-						script {
-							dir ('repo/build/blackduck-sbt-java11') {
-								release.buildPrivateDockerImage('codedx/codedx-blackduckrunner-sbt-java11', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-blackduckrunner:$commitShort"])
-							}
-						}
-					}
-				}
-
 				stage('Docker Build - burpsuite') {
 					steps {
 						script {
@@ -251,46 +211,6 @@ pipeline {
 						script {
 							dir ('repo/build/coverity') {
 								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase', commitShort, 'Dockerfile', '../..')
-							}
-						}
-					}
-				}
-
-				stage('Docker Build - coverity-dotnet') {
-					steps {
-						script {
-							dir ('repo/build/coverity-dotnet') {
-								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase-dotnet', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-coverityrunnerbase:$commitShort"])
-							}
-						}
-					}
-				}
-
-				stage('Docker Build - coverity-go') {
-					steps {
-						script {
-							dir ('repo/build/coverity-go') {
-								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase-go', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-coverityrunnerbase:$commitShort"])
-							}
-						}
-					}
-				}
-
-				stage('Docker Build - coverity-sbt-java8') {
-					steps {
-						script {
-							dir ('repo/build/coverity-sbt-java8') {
-								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase-sbt', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-coverityrunnerbase:$commitShort"])
-							}
-						}
-					}
-				}
-
-				stage('Docker Build - coverity-sbt-java11') {
-					steps {
-						script {
-							dir ('repo/build/coverity-sbt-java11') {
-								release.buildPrivateDockerImage('codedx/codedx-coverityrunnerbase-sbt-java11', commitShort, 'Dockerfile', '../..', ["BASE": "codedx/codedx-coverityrunnerbase:$commitShort"])
 							}
 						}
 					}
@@ -417,38 +337,6 @@ pipeline {
 					}
 				}
 
-				stage('Release - blackduck-dotnet') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-blackduckrunner-dotnet', 'codedx/codedx-blackduckrunner-dotnet', commitShort, nextVersion)
-						}
-					}
-				}
-
-				stage('Release - blackduck-go') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-blackduckrunner-go', 'codedx/codedx-blackduckrunner-go', commitShort, nextVersion)
-						}
-					}
-				}
-
-				stage('Release - blackduck-sbt-java8') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-blackduckrunner-sbt', 'codedx/codedx-blackduckrunner-sbt', commitShort, nextVersion)
-						}
-					}
-				}
-
-				stage('Release - blackduck-sbt-java11') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-blackduckrunner-sbt-java11', 'codedx/codedx-blackduckrunner-sbt-java11', commitShort, nextVersion)
-						}
-					}
-				}
-
 				stage('Release - burpsuite') {
 					steps {
 						script {
@@ -469,38 +357,6 @@ pipeline {
 					steps {
 						script {
 							release.releaseDockerImage('codedx/codedx-coverityrunnerbase', 'codedx/codedx-coverityrunnerbase', commitShort, nextVersion)
-						}
-					}
-				}
-
-				stage('Release - coverity-dotnet') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-dotnet', 'codedx/codedx-coverityrunnerbase-dotnet', commitShort, nextVersion)
-						}
-					}
-				}
-
-				stage('Release - coverity-go') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-go', 'codedx/codedx-coverityrunnerbase-go', commitShort, nextVersion)
-						}
-					}
-				}
-
-				stage('Release - coverity-sbt-java8') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-sbt', 'codedx/codedx-coverityrunnerbase-sbt', commitShort, nextVersion)
-						}
-					}
-				}
-
-				stage('Release - coverity-sbt-java11') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-coverityrunnerbase-sbt-java11', 'codedx/codedx-coverityrunnerbase-sbt-java11', commitShort, nextVersion)
 						}
 					}
 				}

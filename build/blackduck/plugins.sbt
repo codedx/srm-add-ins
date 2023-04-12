@@ -1,0 +1,2 @@
+// using this for the pre-1.0 and 1.0 configuration after finding that the "addDependencyTreePlugin" 1.0 configuration generates: "error: not found: value addDependencyTreePlugin"
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")
