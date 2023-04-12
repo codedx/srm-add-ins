@@ -6,7 +6,7 @@ For details on creating your own Code Dx Add-Ins, refer to the "Walkthrough: Add
 
 ## Black Duck
 
-The TOML for this Add-In is located [here](./build/blackduck-dotnet/blackduck-example.toml).
+The TOML for this Add-In is located [here](./build/blackduck/blackduck-example.toml).
 
 >Note: Refer to the [Dockerfile](./build/blackduck/Dockerfile) for the list of installed detectors, and derive Docker images as necessary to support non-rapid scans.
 
