@@ -1,4 +1,4 @@
-FROM golang:1.20.3-buster as builder
+FROM golang:1.20.4-buster as builder
 
 WORKDIR /tmp/build
 COPY go.mod .

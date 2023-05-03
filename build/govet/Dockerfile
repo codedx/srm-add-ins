@@ -1,6 +1,6 @@
 # Dockerfile for codedx-govetrunner
 
-ARG BASE=golang:1.20.3-buster
+ARG BASE=golang:1.20.4-buster
 FROM $BASE as builder
 
 # Create a directory to store tool findings

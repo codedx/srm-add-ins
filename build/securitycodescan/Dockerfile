@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0.202
+FROM mcr.microsoft.com/dotnet/sdk:7.0.203
 
 WORKDIR /tmp
 
