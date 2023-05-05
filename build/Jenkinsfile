@@ -186,16 +186,6 @@ pipeline {
 					}
 				}
 
-				stage('Docker Build - burpsuite') {
-					steps {
-						script {
-							dir ('repo/build/burpsuite') {
-								release.buildPrivateDockerImage('codedx/codedx-burpsuiterunnerbase', commitShort, 'Dockerfile', '../..')
-							}
-						}
-					}
-				}
-
 				stage('Docker Build - checkmarx') {
 					steps {
 						script {
@@ -333,14 +323,6 @@ pipeline {
 					steps {
 						script {
 							release.releaseDockerImage('codedx/codedx-blackduckrunner', 'codedx/codedx-blackduckrunner', commitShort, nextVersion)
-						}
-					}
-				}
-
-				stage('Release - burpsuite') {
-					steps {
-						script {
-							release.releaseDockerImage('codedx/codedx-burpsuiterunnerbase', 'codedx/codedx-burpsuiterunnerbase', commitShort, nextVersion)
 						}
 					}
 				}

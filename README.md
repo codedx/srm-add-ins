@@ -20,12 +20,6 @@ The TOML for this Add-In is located [here](./build/blackduck/blackduck-rapid-sca
 
 ![Black Duck Rapid Scan](./docs/BlackDuckRapidScan.PNG)
 
-# Burp Suite
-
-The TOML for this Add-In is located [here](./build/burpsuite/burpsuite-example.toml).
-
-![Burp Suite](./docs/Burp%20Suite.PNG)
-
 # Checkmarx
 
 The TOML for this Add-In is located [here](./build/checkmarx/checkmarx-example.toml).
