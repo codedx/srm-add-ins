@@ -42,7 +42,7 @@ RUN chown root:blackduck /etc/ssl/certs/java/cacerts && \
 RUN apt-get install -y git
 
 # Install Maven
-ARG MAVEN_VERSION=3.9.2
+ARG MAVEN_VERSION=3.9.4
 RUN curl -LO https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     tar -C /opt -xvf apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     rm apache-maven-${MAVEN_VERSION}-bin.tar.gz
