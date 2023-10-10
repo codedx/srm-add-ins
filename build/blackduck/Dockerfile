@@ -73,7 +73,7 @@ COPY --chown=1000:1000 build/blackduck/plugins.sbt /home/blackduck/.sbt/1.0/plug
 COPY --chown=1000:1000 build/blackduck/plugins.sbt /home/blackduck/.sbt/0.13/plugins/plugins.sbt
 
 # Install Go
-ARG GOVERSION=1.20.2
+ARG GOVERSION=1.21.1
 RUN cd && \
 	curl -LO "https://go.dev/dl/go$GOVERSION.linux-amd64.tar.gz" && \
 	tar -C /usr/local -xzf "go$GOVERSION.linux-amd64.tar.gz" && \
