@@ -69,8 +69,8 @@ RUN apt-get install -y openjdk-${JDK_VERSION}-jdk && \
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add && \
 	apt-get update && \
 	apt-get install sbt
-COPY --chown=1000:1000 build/blackduck/plugins.sbt /home/blackduck/.sbt/1.0/plugins/plugins.sbt
-COPY --chown=1000:1000 build/blackduck/plugins.sbt /home/blackduck/.sbt/0.13/plugins/plugins.sbt
+COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/1.0/plugins/plugins.sbt
+COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/0.13/plugins/plugins.sbt
 
 # Install Go
 ARG GOVERSION=1.21.3
