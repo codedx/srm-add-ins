@@ -1,15 +1,14 @@
-ARG BASE=codedx/codedx-blackduckrunnerbase:v2023.4.2
+ARG BASE=codedx/codedx-blackduckrunnerbase:v2023.8.5
 FROM $BASE
 
 USER root
 
 # Install PowerShell Core
-RUN apt-get update && apt-get install -y wget apt-transport-https software-properties-common && \
-	wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" && \
-	dpkg -i packages-microsoft-prod.deb && \
-	rm packages-microsoft-prod.deb && \
-	apt-get update && \
-	apt-get install -y powershell && \
+RUN apt-get update && apt-get install -y wget && \
+	wget -q "https://github.com/PowerShell/PowerShell/releases/download/v7.3.7/powershell_7.3.7-1.deb_amd64.deb" && \
+	dpkg -i powershell_7.3.7-1.deb_amd64.deb && \
+	apt-get install -f && \
+	rm powershell_7.3.7-1.deb_amd64.deb && \
 	pwsh -version
 
 WORKDIR /opt/codedx/blackduck/work/config
@@ -50,18 +49,16 @@ ENV PATH="$PATH:/opt/apache-maven-3.9.1/bin"
 
 # Install npm (latest LTS is node 18.15.0, includes npm 9.5.0)
 ARG NODE_VERSION=v18.15.0
-RUN curl -LO https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz && \
+RUN apt-get install -y xz-utils && \
+    curl -LO https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz && \
     mkdir -p /usr/local/lib/nodejs && \
     tar xvf node-${NODE_VERSION}-linux-x64.tar.xz -C /usr/local/lib/nodejs
 ENV PATH="$PATH:/usr/local/lib/nodejs/node-${NODE_VERSION}-linux-x64/bin"
 
 # Install pip and pipenv (python3 included in base)
 RUN apt-get install -y python3-pip && \
-	apt-get install -y python-is-python3
-USER blackduck
-RUN pip install pipenv
-ENV PATH="$PATH:/home/blackduck/.local/bin"
-USER root
+	apt-get install -y python-is-python3 && \
+	apt install -y pipenv
 
 # Install SBT and plugin required by SBT detector
 ARG SBT_VERSION=1.7.1
