@@ -68,7 +68,7 @@ RUN apt-get install -y openjdk-${JDK_VERSION}-jdk && \
 	echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list && \
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add && \
 	apt-get update && \
-	apt-get install sbt
+	apt-get install -y sbt
 COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/1.0/plugins/plugins.sbt
 COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/0.13/plugins/plugins.sbt
 

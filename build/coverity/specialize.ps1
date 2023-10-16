@@ -48,7 +48,7 @@ Push-Location $workDirectory
 
 $dockerfilePrefix = @"
 ARG BASE=$baseImageName
-ARG VERSION=2021.06
+ARG VERSION=2023.09
 
 ARG ANALYSIS_ARCHIVE=cov-analysis-linux64-$version.tar.gz
 
