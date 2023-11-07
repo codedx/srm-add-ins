@@ -1,6 +1,6 @@
 # Dockerfile for codedx-coverityrunnerbase
 
-FROM debian:buster-20230919
+FROM debian:buster-20231030
 
 ARG COVERITY_HOME=/opt/sw/synopsys/coverity
 
