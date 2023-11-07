@@ -29,7 +29,7 @@ options=[]
 
 # The image name contains the Docker image that handles this scan request file.
 #
-imageName = "codedx/codedx-coverityrunner:v1.38.0"
+imageName = "codedx/codedx-coverityrunner:v1.41.0"
 
 # The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
 # file, and the exit code file. The user running the Docker image *must* have write access
