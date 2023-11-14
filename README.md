@@ -1,36 +1,14 @@
-# Code Dx Add-In Tools
+# Software Risk Manager Add-In Tools
 
-New Code Dx deployments will include all available Code Dx Add-Ins. You can update existing Code Dx instances by registering Add-Ins using the configuration details in the sections below.
+New Software Risk Manager (SRM) deployments with the Tool Orchestration feature will include all available SRM Add-Ins. You can update existing SRM instances by registering Add-Ins using the configuration details in the sections below.
 
-For details on creating your own Code Dx Add-Ins, refer to the "Walkthrough: Add Tool" section of the [Tool Orchestration](https://community.synopsys.com/s/document-item?bundleId=codedx&topicId=user_guide%2FAnalysis%2Ftool-orchestration.html&_LANG=enus) documentation.
-
-## Black Duck
-
-The TOML for this Add-In is located [here](./build/blackduck/blackduck-example.toml).
-
->Note: Refer to the [Dockerfile](./build/blackduck/Dockerfile) for the list of installed detectors, and derive Docker images as necessary to support non-rapid scans.
-
-![Black Duck](./docs/BlackDuck.PNG)
-
-## Black Duck Rapid Scan
-
-The TOML for this Add-In is located [here](./build/blackduck/blackduck-rapid-scan-example.toml).
-
->Note: Refer to the [Dockerfile](./build/blackduck/Dockerfile) for the list of installed detectors.
-
-![Black Duck Rapid Scan](./docs/BlackDuckRapidScan.PNG)
+For details on creating your own SRM Add-Ins, refer to the "Walkthrough: Add Tool" section of the [Tool Orchestration](https://community.synopsys.com/s/document-item?bundleId=codedx&topicId=user_guide%2FAnalysis%2Ftool-orchestration.html&_LANG=enus) documentation.
 
 # Checkmarx
 
 The TOML for this Add-In is located [here](./build/checkmarx/checkmarx-example.toml).
 
 ![Checkmarx](./docs/Checkmarx.PNG)
-
-# Coverity
-
-The TOML for this Add-In is located [here](./build/coverity-dotnet/Coverity-dotnet-example.toml).
-
->Note: To use this add-in, you must derive a new Docker image with a licensed copy of Coverity. Refer to [specialize.ps1](https://github.com/codedx/codedx-add-ins/blob/main/build/coverity/specialize.ps1) for details on how to build your own Docker image. The resulting Docker image will support buildless scans via cov-capture, and you can derive additional Docker images to run builds with cov-build.
 
 # ErrCheck
 
