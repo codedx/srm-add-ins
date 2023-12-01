@@ -4,7 +4,7 @@ FROM $BASE
 USER root
 
 # Install PowerShell Core
-RUN apt-get update && apt-get install -y wget && \
+RUN apt-get update && apt-get install -y wget curl && \
 	wget -q "https://github.com/PowerShell/PowerShell/releases/download/v7.3.7/powershell_7.3.7-1.deb_amd64.deb" && \
 	dpkg -i powershell_7.3.7-1.deb_amd64.deb && \
 	apt-get install -f && \
