@@ -1,6 +1,6 @@
 # Dockerfile for codedx-gosecrunner
 
-ARG BASE=golang:1.21.3-bullseye
+ARG BASE=golang:1.21.4-bullseye
 FROM $BASE as builder
 
 # Create a directory to store tool findings
