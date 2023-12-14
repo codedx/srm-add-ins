@@ -21,6 +21,10 @@ options=[]
 
 options=[]
 
+[cov-manage-emit] # cov-manage-emit
+
+options=[]
+
 [cov-analyze] # cov-analyze options
 
 options=[]

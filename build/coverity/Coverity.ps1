@@ -5,7 +5,8 @@
 # Step 2) Change to root build directory or an alternate subdirectory
 # Step 3) Run cov-build/cov-capture
 # Step 4) Run cov-analyze with specified command arguments
-# Step 5) Run cov-format-errors
+# Step 5) Optionally run cov-manage-emit with specified command arguments
+# Step 6) Run cov-format-errors
 
 param (
 	[Parameter(Mandatory=$true)][string] $sourcePath,
@@ -33,11 +34,11 @@ if ($intermediateDirectory -eq '') {
 write-verbose "Reading scan request file ($scanRequestFilePath)..."
 $scanRequestConfig = Get-Config $scanRequestFilePath
 
-write-verbose 'Running cov-configure...'
-$scanRequestConfig.'cov-configure'.options | ForEach-Object {
+$covConfigureOptions = $scanRequestConfig.'cov-configure'.options
+if ($covConfigureOptions.length -gt 0) {
 
-	write-verbose "cov-configure $_"
-	cov-configure $_
+	write-verbose "Running cov-configure with options $covConfigureOptions..."
+	cov-configure @($covConfigureOptions)
 	if ($LASTEXITCODE -ne 0) {
 		Exit-Script "Failed to run cov-configure ($LASTEXITCODE)"
 	}
@@ -79,15 +80,31 @@ if ($buildCmdLine.length -gt 0) {
 	}
 }
 
-write-verbose 'Step 4: Running cov-analyze with specified command arguments...'
+$covManageEmitOptions = $scanRequestConfig.'cov-manage-emit'.options
+if ($covManageEmitOptions.length -gt 0) {
+
+	write-verbose "Step 4: Running cov-manage-emit with options: $covManageEmitOptions..."
+	cov-manage-emit --dir $intermediateDirectory @($covManageEmitOptions)
+	if ($LASTEXITCODE -ne 0) {
+		Exit-Script "Failed to run 'cov-manage-emit' ($LASTEXITCODE)"
+	}
+} else {
+
+	write-verbose 'Step 4: Skipping cov-manage-emit'
+}
+
+write-verbose 'Step 5: Running cov-analyze with specified command arguments...'
 $covAnalyzeOptions = Set-OptionsEnvironmentVariables $scanRequestConfig.'cov-analyze'.options $allowedEnvironmentVariables
 cov-analyze --dir $intermediateDirectory @($covAnalyzeOptions)
 if ($LASTEXITCODE -ne 0) {
 	Exit-Script "Failed to run cov-analyze at '$sourceDir' ($LASTEXITCODE)"
 }
 
-write-verbose 'Step 5: Running cov-format-errors...'
+write-verbose 'Step 6: Running cov-format-errors...'
 $outputPath = $scanRequestConfig.request.resultfilepath
 cov-format-errors --dir $intermediateDirectory --json-output-v8 $outputPath
+if ($LASTEXITCODE -ne 0) {
+	Exit-Script "Failed to run cov-format-errors at '$sourceDir' ($LASTEXITCODE)"
+}
 
 write-verbose 'Done'
