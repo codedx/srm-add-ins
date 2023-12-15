@@ -34,11 +34,11 @@ if ($intermediateDirectory -eq '') {
 write-verbose "Reading scan request file ($scanRequestFilePath)..."
 $scanRequestConfig = Get-Config $scanRequestFilePath
 
-$covConfigureOptions = $scanRequestConfig.'cov-configure'.options
-if ($covConfigureOptions.length -gt 0) {
+write-verbose 'Running cov-configure...'
+$scanRequestConfig.'cov-configure'.options | ForEach-Object {
 
-	write-verbose "Running cov-configure with options $covConfigureOptions..."
-	cov-configure @($covConfigureOptions)
+	write-verbose "cov-configure $_"
+	cov-configure $_
 	if ($LASTEXITCODE -ne 0) {
 		Exit-Script "Failed to run cov-configure ($LASTEXITCODE)"
 	}
