@@ -66,6 +66,9 @@ RUN chown -R zap:zap /zap/wrk
 
 USER zap
 
+# Update add-ons
+RUN /zap/zap-x.sh -cmd -addonupdate
+
 CMD ["sh"]
 
 
