@@ -123,7 +123,6 @@ function Wait-CodeDxJob([string] $baseUrl, [string] $apiKey, [string] $jobId, [i
 
 	do {
 		$status = Invoke-RestMethod -Uri "$baseUrl/api/jobs/$jobId" -Headers $headers
-k		
 		$doneStatus = 'completed','failed','cancelled'
 		if ($doneStatus -contains $status.status) {
 			return $status.status
