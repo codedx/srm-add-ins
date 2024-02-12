@@ -46,6 +46,7 @@ function Set-ToolConnectorDisabled([string] $baseUrl, [string] $apiKey, [string]
 function Set-ToolInputDisabled([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId, [string] $inputId, [string] $tagId) {
 
 	$headers = New-Header $apiKey
+	$headers['Content-Type'] = 'application/json'
 
 	$body = ConvertTo-Json @{ 'enabled' = $false }
 
@@ -122,7 +123,7 @@ function Wait-CodeDxJob([string] $baseUrl, [string] $apiKey, [string] $jobId, [i
 
 	do {
 		$status = Invoke-RestMethod -Uri "$baseUrl/api/jobs/$jobId" -Headers $headers
-		
+k		
 		$doneStatus = 'completed','failed','cancelled'
 		if ($doneStatus -contains $status.status) {
 			return $status.status
