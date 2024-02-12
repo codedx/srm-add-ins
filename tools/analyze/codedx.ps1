@@ -107,7 +107,10 @@ function Invoke-Analyze([string] $baseUrl, [string] $apiKey, [string] $analysisP
 		} | ConvertTo-Json
 	}
 
-	Invoke-RestMethod -Uri "$baseUrl/x/analysis-prep/$analysisPrepId/branch" -Method PUT -Headers $headers -Body $branch
+	$branchHeaders = New-Header $apiKey
+	$branchHeaders['Content-Type'] = 'application/json'
+	Invoke-RestMethod -Uri "$baseUrl/x/analysis-prep/$analysisPrepId/branch" -Method PUT -Headers $branchHeaders -Body $branch
+
 	Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep/$analysisPrepId/analyze" -Method POST -Headers $headers
 }
 
