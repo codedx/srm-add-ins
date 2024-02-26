@@ -74,7 +74,7 @@ if ($buildCmdLine.length -gt 0) {
 
 	write-verbose 'Step 3: Running cov-capture with specified command arguments...'
 	$covCaptureOptions = Set-OptionsEnvironmentVariables $scanRequestConfig.'cov-capture'.options $allowedEnvironmentVariables
-	cov-capture --dir $intermediateDirectory --project-dir $sourceDir @($covCaptureOptions)
+	cov-capture --dir $intermediateDirectory @($covCaptureOptions)
 	if ($LASTEXITCODE -ne 0) {
 		Exit-Script "Failed to run cov-capture at '$sourceDir' with build command line '$buildCmdLine' ($LASTEXITCODE)"
 	}
