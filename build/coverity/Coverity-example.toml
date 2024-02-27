@@ -19,6 +19,7 @@ options=[]
 
 [cov-capture] # cov-capture options
 
+preCaptureCmdLine=''
 options=[]
 
 [cov-manage-emit] # cov-manage-emit

@@ -72,6 +72,12 @@ if ($buildCmdLine.length -gt 0) {
 	}
 } else {
 
+	$preCaptureCmdLine = $scanRequestConfig.'cov-capture'.preCaptureCmdLine
+	if (-not ([string]::IsNullOrWhitespace($preCaptureCmdLine))) {
+		write-verbose "Running precapture command $preCaptureCmdLine..."
+		Invoke-Expression -Command $preCaptureCmdLine
+	}
+
 	write-verbose 'Step 3: Running cov-capture with specified command arguments...'
 	$covCaptureOptions = Set-OptionsEnvironmentVariables $scanRequestConfig.'cov-capture'.options $allowedEnvironmentVariables
 	cov-capture --dir $intermediateDirectory @($covCaptureOptions)
