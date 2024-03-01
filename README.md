@@ -2,7 +2,7 @@
 
 New Software Risk Manager (SRM) deployments with the Tool Orchestration feature will include all available SRM Add-Ins. You can update existing SRM instances by registering Add-Ins using the configuration details in the sections below.
 
-For details on creating your own SRM Add-Ins, refer to the "Walkthrough: Add Tool" section of the [Tool Orchestration](https://community.synopsys.com/s/document-item?bundleId=codedx&topicId=user_guide%2FAnalysis%2Ftool-orchestration.html&_LANG=enus) documentation.
+For details on creating your own SRM Add-Ins, refer to the "Walkthrough: Add Tool" section of the [Tool Orchestration](https://sig-product-docs.synopsys.com/bundle/codedx/page/user_guide/Analysis/tool-orchestration.html) documentation.
 
 # Checkmarx
 
