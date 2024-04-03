@@ -1,4 +1,4 @@
-FROM golang:1.22.0-alpine3.18 as builder
+FROM golang:1.22.1-alpine3.18 as builder
 
 ARG ZAP_VERSION=2.14.0
 
