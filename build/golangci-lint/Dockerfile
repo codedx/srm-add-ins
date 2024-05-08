@@ -1,6 +1,6 @@
 # Dockerfile for codedx-golangci-lintrunner
 
-ARG BASE=golang:1.22.1-bullseye
+ARG BASE=golang:1.22.3-bullseye
 FROM $BASE as builder
 
 # Create a directory to store tool findings
