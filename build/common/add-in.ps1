@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.1.0
+.VERSION 1.2.0
 .GUID 6e54ccbc-2837-4839-9faf-2024219585d8
 .AUTHOR Code Dx
 #>
@@ -146,7 +146,7 @@ function Push-BaseSourceCodeDirectory([string] $defaultDirectory, [string] $rela
 function Expand-SourceArchive([string] $path, [string] $destinationPath, [switch] $restoreGitDirectory) {
 
 	write-verbose "Expanding $path to $destinationPath..."
-	Expand-Archive $path $destinationPath -Force
+	Expand-Archive $path $destinationPath -Force -Verbose:$false
 
 	Get-ChildItem -LiteralPath $destinationPath -Filter '.gitdir' -Recurse -Force -Directory | ForEach-Object {
 
