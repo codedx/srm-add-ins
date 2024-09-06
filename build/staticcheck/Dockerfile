@@ -28,6 +28,7 @@ RUN FILE=toml2json-linux-amd64.tar.gz && \
 	DEST=/opt/codedx/staticcheck/tools/toml2json && \
 	mkdir -p $DEST && \
 	tar -C $DEST -xzf $FILE  && \
+	chmod +x $DEST/toml2json && \
 	rm $FILE
 
 # Install staticcheck
