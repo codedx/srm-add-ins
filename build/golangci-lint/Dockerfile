@@ -1,4 +1,4 @@
-# Dockerfile for codedx-golangci-lintrunner
+# Dockerfile for codedx-golangci-lint
 
 ARG BASE=golang:1.23.0-bullseye
 FROM $BASE as builder

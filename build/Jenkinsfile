@@ -210,7 +210,7 @@ pipeline {
 					steps {
 						script {
 							dir ('repo/build/golangci-lint') {
-								release.buildPrivateDockerImage('codedx/codedx-golangci-lintrunner', commitShort, 'Dockerfile', '../..')
+								release.buildPrivateDockerImage('codedx/codedx-golangci-lint', commitShort, 'Dockerfile', '../..')
 							}
 						}
 					}
@@ -346,7 +346,7 @@ pipeline {
 				stage('Release - golangci-lint') {
 					steps {
 						script {
-							release.releaseDockerImage('codedx/codedx-golangci-lintrunner', 'codedx/codedx-golangci-lintrunner', commitShort, nextVersion)
+							release.releaseDockerImage('codedx/codedx-golangci-lint', 'codedx/codedx-golangci-lint', commitShort, nextVersion)
 						}
 					}
 				}

@@ -13,4 +13,4 @@ Push-Location $PSScriptRoot
 . ..\common\docker.ps1
 . ..\common\common.ps1
 
-Invoke-ImageBuild '../..' (get-item './Dockerfile').fullname '' "codedx-golangci-lintrunner:$imageVersion" $registry $username $pwd
+Invoke-ImageBuild '../..' (get-item './Dockerfile').fullname '' "codedx-golangci-lint:$imageVersion" $registry $username $pwd
