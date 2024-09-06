@@ -22,12 +22,6 @@ The TOML for this Add-In is located [here](./build/govet/govet-example.toml).
 
 ![Go Vet](./docs/Go%20Vet.PNG)
 
-# GoLint
-
-The TOML for this Add-In is located [here](./build/golangci-lint/golangci-lint-golint-example.toml).
-
-![GoLint](./docs/GoLint.PNG)
-
 # GoSec
 
 The TOML for this Add-In is located [here](./build/gosec/gosec-example.toml).
@@ -39,6 +33,12 @@ The TOML for this Add-In is located [here](./build/gosec/gosec-example.toml).
 The TOML for this Add-In is located [here](./build/golangci-lint/golangci-lint-ineffassign-example.toml).
 
 ![Ineffassign](./docs/Ineffassign.PNG)
+
+# Revive
+
+The TOML for this Add-In is located [here](./build/golangci-lint/golangci-lint-revive-example.toml).
+
+![Revive](./docs/Revive.PNG)
 
 # Security Code Scan
 
