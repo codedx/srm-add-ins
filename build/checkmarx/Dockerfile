@@ -11,7 +11,7 @@ RUN apt-get update
 RUN apt-get install -y curl
 
 RUN FILE=toml2json-linux-amd64.tar.gz && \
-	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.0.0/$FILE && \
+	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.1.0/$FILE && \
 	DEST=/opt/codedx/checkmarx/bin && \
 	mkdir -p $DEST && \
 	tar -C $DEST -xzf $FILE  && \

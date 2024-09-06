@@ -1,14 +1,14 @@
-ARG BASE=codedx/codedx-blackduckrunnerbase:v2024.6.3
+ARG BASE=codedx/codedx-blackduckrunnerbase:v2024.6.4
 FROM $BASE
 
 USER root
 
 # Install PowerShell Core
 RUN apt-get update && apt-get install -y wget curl && \
-	wget -q "https://github.com/PowerShell/PowerShell/releases/download/v7.3.7/powershell_7.3.7-1.deb_amd64.deb" && \
-	dpkg -i powershell_7.3.7-1.deb_amd64.deb && \
+	wget -q "https://github.com/PowerShell/PowerShell/releases/download/v7.4.5/powershell_7.4.5-1.deb_amd64.deb" && \
+	dpkg -i powershell_7.4.5-1.deb_amd64.deb && \
 	apt-get install -f && \
-	rm powershell_7.3.7-1.deb_amd64.deb && \
+	rm powershell_7.4.5-1.deb_amd64.deb && \
 	pwsh -version
 
 WORKDIR /opt/codedx/blackduck/work/config
@@ -21,7 +21,7 @@ COPY build/common/add-in.ps1 .
 
 # Install toml2json
 RUN FILE=toml2json-linux-amd64.tar.gz && \
-	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.0.0/$FILE && \
+	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.1.0/$FILE && \
 	DEST=/opt/codedx/blackduck/bin && \
 	mkdir -p $DEST && \
 	tar -C $DEST -xzf $FILE  && \

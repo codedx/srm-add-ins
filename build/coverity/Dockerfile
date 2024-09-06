@@ -28,7 +28,7 @@ COPY --chown=coverity:coverity build/coverity/LICENSE /home/coverity/LICENSE
 
 # Install toml2json
 RUN FILE=toml2json-linux-amd64.tar.gz && \
-	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.0.0/$FILE && \
+	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.1.0/$FILE && \
 	DEST=/opt/codedx/coverity/script && \
 	mkdir -p $DEST && \
 	tar -C $DEST -xzf $FILE  && \

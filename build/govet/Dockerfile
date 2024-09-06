@@ -1,6 +1,6 @@
 # Dockerfile for codedx-govetrunner
 
-ARG BASE=golang:1.22.5-bullseye
+ARG BASE=golang:1.23.0-bullseye
 FROM $BASE as builder
 
 # Create a directory to store tool findings
@@ -16,7 +16,7 @@ COPY build/govet/GoVet.ps1 .
 COPY build/common/add-in.ps1 .
 
 # Install PowerShell Core
-RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb && \
+RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb && \
 	dpkg -i packages-microsoft-prod.deb && \
 	apt-get update && \
 	apt-get install -y powershell && \
@@ -24,7 +24,7 @@ RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod
 
 # Install toml2json
 RUN FILE=toml2json-linux-amd64.tar.gz && \
-	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.0.0/$FILE && \
+	curl -LO https://github.com/codedx/codedx-toml2json/releases/download/v1.1.0/$FILE && \
 	DEST=/opt/codedx/govet/tools/toml2json && \
 	mkdir -p $DEST && \
 	tar -C $DEST -xzf $FILE  && \
