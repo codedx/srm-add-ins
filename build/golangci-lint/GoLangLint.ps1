@@ -3,7 +3,7 @@
 #
 # Step 1: Unpack source code
 # Step 2) Change to root build directory or an alternate subdirectory
-# Step 3) Run a golangci-lint linter that Code Dx supports
+# Step 3) Run a golangci-lint linter that SRM supports
 #
 #
 
@@ -47,6 +47,11 @@ $linters = @{
 		header = 'ErrCheck'
 		format = 'line-number'
 	}
+	# revive is a drop-in replacement for GoLint
+	'revive' = @{
+		header = 'GoLint'
+		format = 'line-number'
+	}
 	'golint' = @{
 		header = 'GoLint'
 		format = 'line-number'
@@ -57,7 +62,7 @@ $linters = @{
 	}
 }
 if ($linters.Keys -notcontains $linter) {
-	Exit-Script "Code Dx does not support linter $linter."
+	Exit-Script "SRM does not support linter $linter."
 }
 if ($linters.options -contains '--timeout') {
 	Exit-Script 'The golangci-lint options cannot include --timeout'
@@ -77,7 +82,7 @@ $invalidOptions = $options -match "^\s*--($invalidOptionRegex)(?:=.+)?$"
 write-verbose "Matches: $matches"
 
 if ($invalidOptions.count -gt 0) {
-	Exit-Script  "The following options conflict with options set by Code Dx: $invalidOptions"
+	Exit-Script  "The following options conflict with options set by SRM: $invalidOptions"
 }
 
 write-verbose "Step 3: Running $linter..."
