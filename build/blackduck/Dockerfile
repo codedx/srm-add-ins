@@ -1,4 +1,4 @@
-ARG BASE=codedx/codedx-blackduckrunnerbase:v2024.6.4
+ARG BASE=codedx/codedx-blackduckrunnerbase:v2024.9.2
 FROM $BASE
 
 USER root
@@ -74,7 +74,7 @@ COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/1.0/plug
 COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/0.13/plugins/plugins.sbt
 
 # Install Go
-ARG GOVERSION=1.22.0
+ARG GOVERSION=1.23.1
 RUN cd && \
 	curl -LO "https://go.dev/dl/go$GOVERSION.linux-amd64.tar.gz" && \
 	tar -C /usr/local -xzf "go$GOVERSION.linux-amd64.tar.gz" && \
