@@ -2,7 +2,7 @@
 
 FROM debian:buster-20240612
 
-ARG COVERITY_HOME=/opt/sw/synopsys/coverity
+ARG COVERITY_HOME=/opt/sw/blackduck/coverity
 
 RUN apt-get update && \
 	apt-get install -y wget curl

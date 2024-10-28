@@ -237,7 +237,7 @@ $logFile = '/tmp/detect.log'
 write-verbose 'Step 3: Running synopsys-detect.jar with specified command arguments...'
 java -jar /synopsys-detect.jar --blackduck.url=$blackDuckBaseUrl --blackduck.api.token=$blackDuckApiToken --detect.wait.for.results=true --detect.cleanup=false --detect.source.path=$sourceDirectory --detect.output.path=$outputDirectory --detect.phone.home.passthrough.invoked.by.image=true @($detectOptions) | Tee-Object $logFile
 
-# For possible exit codes, see https://community.synopsys.com/s/document-item?bundleId=integrations-detect&topicId=troubleshooting/exit-codes.html&_LANG=enus
+# For possible exit codes, see https://documentation.blackduck.com/bundle/detect/page/troubleshooting/exit-codes.html
 $detectSuccessful = $LASTEXITCODE -eq 0 -or ($scanRequestConfig.blackduck.isRapidScan -and $LASTEXITCODE -eq 3) # FAILURE_POLICY_VIOLATION
 
 # The status file in $outputDirectory/runs/<date-time>/status/status.json contains the location
@@ -249,7 +249,7 @@ $detectStatusContent = Get-Content $detectStatusFile
 Write-Verbose ($detectStatusContent -join "`n")
 
 if (-not $detectSuccessful) {
-	throw "The synopsys-detect.jar run failed with exit code $LASTEXITCODE"
+	throw "Detect failed with exit code $LASTEXITCODE"
 }
 
 $statusJson = $detectStatusContent | ConvertFrom-Json

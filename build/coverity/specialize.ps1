@@ -71,8 +71,8 @@ ARG  VERSION
 ENV VERSION=$VERSION \
 	PLATFORM=linux64
 
-COPY --chown=coverity:coverity --from=builder /tmp/coverity /opt/sw/synopsys/coverity
-COPY --chown=coverity:coverity license.dat /opt/sw/synopsys/coverity/bin
+COPY --chown=coverity:coverity --from=builder /tmp/coverity /opt/sw/blackduck/coverity
+COPY --chown=coverity:coverity license.dat /opt/sw/blackduck/coverity/bin
 '@
 
 $dockerfile = 'Dockerfile-specialized'
