@@ -1,4 +1,4 @@
-ARG BASE=codedx/codedx-blackduckrunnerbase:v2024.9.2
+ARG BASE=codedx/codedx-blackduckrunnerbase:v2024.9.4
 FROM $BASE
 
 USER root
