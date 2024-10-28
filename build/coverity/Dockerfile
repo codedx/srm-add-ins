@@ -15,7 +15,7 @@ RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod
 	rm packages-microsoft-prod.deb && \
 	pwsh -version
 
-ENV VENDOR=Synopsys \
+ENV VENDOR='Black Duck' \
 	COVERITY_HOME=$COVERITY_HOME
 
 RUN mkdir -p "${COVERITY_HOME}/bin" && \

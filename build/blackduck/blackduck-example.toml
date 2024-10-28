@@ -15,11 +15,11 @@ relativeDirectory=''            # source code directory specified by relative di
 projectFileDirectoryPatterns=[] # patterns (e.g., 'pom.xml','go.mod','*.go') to find source code directory by largest, first file found
 
 [detect]
-preDetectCmdLine      = ''       # optional command to run before invoking Synopsys Detect
-options               = []       # CLI args passed to Synopsys Detect
-optionsYaml           = ''       # YAML args passed to Synopsys Detect (--spring.config.location)
+preDetectCmdLine      = ''       # optional command to run before invoking Black Duck Detect
+options               = []       # CLI args passed to Black Duck Detect
+optionsYaml           = ''       # YAML args passed to Black Duck Detect (--spring.config.location)
 logLevel              = 'INFO'   # Log level (must be either INFO, DEBUG, or TRACE)
-# skipSynopsysPhoneHome = true   # set to true to opt-out of sharing usage metrics
+# skipBlackDuckPhoneHome = true   # set to true to opt-out of sharing usage metrics
 
 [scraper]
 options = []                # CLI args passed to Black-Duck-Scrape.jar

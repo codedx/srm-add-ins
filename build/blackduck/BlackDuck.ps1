@@ -4,7 +4,7 @@
 # api-token (mounted at /path/to/workdir/workflow-secrets/blackduck-credential/api-token)
 #
 # Step 1: Unzip source
-# Step 2: Run Synopsys Detect on source
+# Step 2: Run Black Duck Detect on source
 # Step 3: Fetch result
 #         3a: Fetch JSON result (rapid scan model)
 #         3b: Run Black-Duck-Scrape to pull results (full scan model)
@@ -221,7 +221,7 @@ if ($optionsYaml -ne "") {
 	$detectOptions += "--spring.config.location=""$optionsYamlPath"""
 }
 
-if ([Convert]::ToBoolean($scanRequestConfig.detect.skipSynopsysPhoneHome)) {
+if ([Convert]::ToBoolean($scanRequestConfig.detect.skipBlackDuckPhoneHome)) {
 	[Environment]::SetEnvironmentVariable("SYNOPSYS_SKIP_PHONE_HOME", "true")
 }
 
