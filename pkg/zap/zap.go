@@ -2,8 +2,8 @@ package zap
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
-	"github.com/zaproxy/zap-api-go/zap"
 	"io"
 	"io/ioutil"
 	"log"
@@ -15,6 +15,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/zaproxy/zap-api-go/zap"
 )
 
 // Context holds the ZAP context data and the list of ZAP users.
@@ -308,7 +310,7 @@ func getZapResult(resultKey string, result map[string]interface{}) (interface{},
 		if ok {
 			errorStr += fmt.Sprintf(" with message '%s'", msg.(string))
 		}
-		return "", fmt.Errorf(errorStr)
+		return "", errors.New(errorStr)
 	}
 	return result[resultKey], nil
 }
