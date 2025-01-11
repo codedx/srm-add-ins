@@ -34,15 +34,21 @@ WORKDIR /zap
 COPY --from=builder /zap .
 COPY --from=builder /zap-git/zaproxy/docker/zap-api-scan.py .
 COPY --from=builder /zap-git/zaproxy/docker/zap_common.py .
-COPY --from=builder /zap-git/zaproxy/docker/policies/ /home/zap/.ZAP/policies/
-COPY --from=builder /zap-git/zaproxy/docker/scripts/ /home/zap/.ZAP_D/scripts/
 
 # zap-x and Xvfb is only needed for running the ajax spider, which zap-api-scan
 # doesn't do, but it will only attempt to run zap-x.sh and not zap.sh
 RUN cp zap.sh zap-x.sh
 
 WORKDIR /zap/wrk
+
+# to support a read-only root filesystem, auth_script_hook.py starts in /zap-data and
+# will be copied to /zap/wrk at runtime to support API scans. profile data will be
+# copied to the profile of the user running the container, which may not be the "zap"
+# user
+WORKDIR /zap-data
 COPY cmd/zap/auth_script_hook.py .
+COPY --from=builder /zap-git/zaproxy/docker/policies/ /zap-data/profile/.ZAP/policies/
+COPY --from=builder /zap-git/zaproxy/docker/scripts/  /zap-data/profile/.ZAP_D/scripts/
 
 RUN apk update && apk add --no-cache libxslt ca-certificates bash netcat-openbsd firefox-esr python3 py3-pip
 RUN pip3 install --upgrade python-owasp-zap-v2.4 urllib3
@@ -61,8 +67,15 @@ ENV PATH $JAVA_HOME/bin:/zap/:$PATH
 
 RUN adduser -h /home/zap -s /bin/sh -D zap
 RUN chown -R zap:zap /opt/codedx/zap
-RUN chown -R zap:zap /home/zap
 RUN chown -R zap:zap /zap/wrk
+
+# Ensure that a legacy TOML add-in file works with this container image
+RUN cp -R /zap-data/profile/.ZAP   /home/zap && \
+	cp -R /zap-data/profile/.ZAP_D /home/zap && \
+	chown -R zap:zap /home/zap
+
+# Add version file to track cmd/zap capability
+RUN echo '1.1' > '/version'
 
 USER zap
 

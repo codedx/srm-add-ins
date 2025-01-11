@@ -4,9 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"github.com/codedx/codedx-add-ins/pkg/console"
-	"github.com/codedx/codedx-add-ins/pkg/zap"
-	zaproxy "github.com/zaproxy/zap-api-go/zap"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,6 +11,10 @@ import (
 	"os/exec"
 	"sync"
 	"time"
+
+	"github.com/codedx/codedx-add-ins/pkg/console"
+	"github.com/codedx/codedx-add-ins/pkg/zap"
+	zaproxy "github.com/zaproxy/zap-api-go/zap"
 )
 
 const (
@@ -36,7 +37,7 @@ const (
 	apiScanAuthScriptErrorExitCode            = 18
 	apiScanConfigFileErrorExitCode            = 19
 	apiScanFailedExitCode                     = 20
-	moveReportFailedExitCode                  = 21
+	copyReportFailedExitCode                  = 21
 	applyXsltFailedExitCode                   = 22
 )
 
@@ -396,10 +397,12 @@ func runApiScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *o
 
 	log.Println("Scan completed")
 
-	// move the report from /zap/wrk/report.xml to the specified output file
-	err = os.Rename(reportFile, *output)
+	// copy the report from /zap/wrk/report.xml to the specified output file - we cannot move
+	// the file because the destination file will be a different filesystem when the root filesystem
+	// is read-only
+	err = copyFile(reportFile, *output)
 	if err != nil {
-		console.Fatal(moveReportFailedExitCode, err)
+		console.Fatal(copyReportFailedExitCode, err)
 	}
 
 	log.Println("Applying report template...")
@@ -408,6 +411,34 @@ func runApiScan(zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *o
 		console.Fatal(applyXsltFailedExitCode, err)
 	}
 	log.Println("Teport template applied")
+}
+
+func copyFile(srcPath string, destPath string) error {
+
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := src.Close(); err != nil {
+			log.Printf("Unable to close file %s", srcPath)
+		}
+	}()
+
+	dest, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := dest.Close(); err != nil {
+			log.Printf("Unable to close file %s", destPath)
+		}
+	}()
+
+	if _, err = io.Copy(dest, src); err != nil {
+		return err
+	}
+	return nil
 }
 
 // launch and configure a ZAP instance, then export the context file and shut it down

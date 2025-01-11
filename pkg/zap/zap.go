@@ -36,7 +36,20 @@ type User struct {
 func RunZap(zapPath string, apiKey string, waitTime time.Duration, stdoutWriter io.Writer, stderrWriter io.Writer, ready chan string, quit chan int, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	cmd := exec.Command(zapPath, "-daemon", "-config", "api.key=api-key")
+	var zapStartArgs []string
+	zapStartPath := zapPath
+	if strings.HasSuffix(zapPath, ".jar") {
+
+		zapStartPath = "java"
+		if dir, err := os.UserHomeDir(); err == nil {
+			zapStartArgs = append(zapStartArgs, fmt.Sprintf("-Duser.home=%s", dir))
+		}
+		zapStartArgs = append(zapStartArgs, "-XX:MaxRAMPercentage=75.0", "-jar", zapPath)
+	}
+	zapStartArgs = append(zapStartArgs, "-daemon", "-config", "api.key=api-key")
+
+	log.Printf("Starting ZAP: %s %s", zapStartPath, strings.Join(zapStartArgs, " "))
+	cmd := exec.Command(zapStartPath, zapStartArgs...)
 
 	workingDir := filepath.Dir(zapPath)
 	cmd.Dir = workingDir
