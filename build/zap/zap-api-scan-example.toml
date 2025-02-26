@@ -63,7 +63,7 @@ authenticationScriptContent = ""              # the ZEST script for script authe
 
 # The image name contains the Docker image that handles this scan request file.
 #
-imageName = "codedx/codedx-zaprunner:v1.51.0"
+imageName = "codedx/codedx-zaprunner:v1.52.0"
 
 # The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
 # file, and the exit code file. The user running the Docker image *must* have write access
@@ -82,13 +82,29 @@ workDirectory = "/opt/codedx/zap/work"
 #
 preShellCmd = '''
 	echo "Time now is $(date)"
+	if [ -f /zap-data/auth_script_hook.py ]; then
+		# support read-only root filesystem by copying auth_script_hook.py into place
+		cp /zap-data/auth_script_hook.py /zap/wrk
+	fi
+
+	if [ -d /zap-data/profile ]; then
+		cp -R /zap-profile/profile/.ZAP ~
+		cp -R /zap-profile/profile/.ZAP_D ~
+	fi
 '''
 
 # The shell cmd to run as the entry point for the tool.
 #
 shellCmd = '''
+	zapPath='/zap/zap.sh'
+	if [ -f /version ]; then
+		zapPath='/zap/zap-2.14.0.jar'
+		java -Duser.home=$HOME -jar /zap/zap-2.14.0.jar -cmd -addonupdate
+	fi
+	
+	cd /opt/codedx/zap/logs # create zap.out in logs directory
 	/opt/codedx/zap/bin/zap \
-		-zapPath /zap/zap.sh \
+		-zapPath $zapPath \
 		-output /opt/codedx/zap/work/output/zap.output.xml \
 		-xsltProgram /usr/bin/xsltproc \
 		-logFile /opt/codedx/zap/logs/tool.log \
@@ -110,7 +126,7 @@ postShellCmd = '''
 # The log file path list contains zero or more log files for the tool run. Log
 # files get copied to workflow storage and are accessible from the tool service API.
 #
-logFilePaths   = ["/opt/codedx/zap/logs/tool.log", "/opt/codedx/zap/logs/zap.err.log", "/opt/codedx/zap/logs/zap.out.log", "/opt/codedx/zap/bin/zap.out"]
+logFilePaths   = ["/opt/codedx/zap/logs/tool.log", "/opt/codedx/zap/logs/zap.err.log", "/opt/codedx/zap/logs/zap.out.log", "/opt/codedx/zap/logs/zap.out"]
 
 # The result file contains the tool output provided to Code Dx.
 #
@@ -119,3 +135,38 @@ resultFilePath = "/opt/codedx/zap/work/output/zap.output.xml"
 # The Intelligent Orchestration security activities supported by this tool (e.g., sca, sast, dast)
 #
 securityActivities = ['dast']
+
+# The list of emptyDir volumes for the tool. The /.ZAP, /.ZAP_D, and /.java directories are needed when not using uid 1000.
+#
+ephemeralVolumePaths = ["/tmp","/home/zap","/.ZAP","/.ZAP_D","/.java","/opt/codedx/zap/logs","/opt/codedx/zap/work","/opt/codedx/zap/work/output","/zap/wrk"]
+
+[request.workflowSecurityContext]
+
+# The pod security context for the tool.
+#
+podSecurityContext = '''
+{
+	"fsGroup": 1000,
+	"runAsGroup": 1000,
+	"runAsUser": 1000,
+	"runAsNonRoot": true,
+	"seccompProfile": {
+		"type": "RuntimeDefault"
+	},
+	"supplementalGroups": []
+}
+'''
+
+# The container security context for the tool.
+#
+securityContext = '''
+{
+	"allowPrivilegeEscalation": false,
+	"capabilities": {
+		"drop": [
+			"ALL"
+		]
+	},
+	"readOnlyRootFilesystem": true
+}
+'''

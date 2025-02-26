@@ -49,3 +49,38 @@ logFilePaths = ["/tmp/preShellCmd.log", "/tmp/postShellCmd.log"]
 # The result file contains the tool output provided to Code Dx.
 #
 resultFilePath = "/tmp/output.rpt"
+
+# The list of emptyDir volumes for the tool.
+#
+ephemeralVolumePaths = ["/tmp"]
+
+[request.workflowSecurityContext]
+
+# The pod security context for the tool.
+#
+podSecurityContext = '''
+{
+	"fsGroup": 1000,
+	"runAsGroup": 1000,
+	"runAsUser": 1000,
+	"runAsNonRoot": true,
+	"seccompProfile": {
+		"type": "RuntimeDefault"
+	},
+	"supplementalGroups": []
+}
+'''
+
+# The container security context for the tool.
+#
+securityContext = '''
+{
+	"allowPrivilegeEscalation": false,
+	"capabilities": {
+		"drop": [
+			"ALL"
+		]
+	},
+	"readOnlyRootFilesystem": true
+}
+'''

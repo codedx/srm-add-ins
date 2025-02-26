@@ -32,16 +32,16 @@ authenticationScriptContent = ""              # the ZEST script for script authe
 
 # The image name contains the Docker image that handles this scan request file.
 #
-imageName = "codedx/codedx-zaprunner:v1.51.0"
+imageName = "codedx/codedx-zaprunner:v1.52.0"
 
-# The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request 
-# file, and the exit code file. The user running the Docker image *must* have write access 
+# The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
+# file, and the exit code file. The user running the Docker image *must* have write access
 # to the work directory.
 #
 # $workDirectory/analysis-exit-code  - exit code of the shell command
 # $workDirectory/ca-certificates     - trusted CA certificates
 # $workDirectory/config/request.toml - a copy of the scan request file
-# $workDirectory/input               - analysis input 
+# $workDirectory/input               - analysis input
 # $workDirectory/workflow-secrets    - workflow secrets
 #
 workDirectory = "/opt/codedx/zap/work"
@@ -51,13 +51,28 @@ workDirectory = "/opt/codedx/zap/work"
 #
 preShellCmd = '''
 	echo "Time now is $(date)"
+	if [ -f /zap-data/auth_script_hook.py ]; then
+		# support read-only root filesystem by copying auth_script_hook.py into place
+		cp /zap-data/auth_script_hook.py /zap/wrk
+	fi
+
+	if [ -d /zap-data/profile ]; then
+		cp -R /zap-profile/profile/.ZAP ~
+		cp -R /zap-profile/profile/.ZAP_D ~
+	fi
 '''
 
-# The shell cmd to run as the entry point for the tool. 
+# The shell cmd to run as the entry point for the tool.
 #
 shellCmd = '''
+	zapPath='/zap/zap.sh'
+	if [ -f /version ]; then
+		zapPath='/zap/zap-2.14.0.jar'
+		java -Duser.home=$HOME -jar /zap/zap-2.14.0.jar -cmd -addonupdate
+	fi
+	
 	/opt/codedx/zap/bin/zap \
-		-zapPath /zap/zap.sh \
+		-zapPath $zapPath \
 		-output /opt/codedx/zap/work/output/zap.output.xml \
 		-xsltProgram /usr/bin/xsltproc \
 		-logFile /opt/codedx/zap/logs/tool.log \
@@ -67,7 +82,7 @@ shellCmd = '''
 		-scanMode normal
 '''
 
-# The post-shell cmd is an optional command to run after the shell command 
+# The post-shell cmd is an optional command to run after the shell command
 # completes. The post-shell cmd will not run if the shell command returns a
 # non-zero exit code. The exit code of the post-shell command will be the
 # overall exit code if the post-shell command runs.
@@ -88,3 +103,38 @@ resultFilePath = "/opt/codedx/zap/work/output/zap.output.xml"
 # The Intelligent Orchestration security activities supported by this tool (e.g., sca, sast, dast)
 #
 securityActivities = ['dast']
+
+# The list of emptyDir volumes for the tool. The /.ZAP, /.ZAP_D, and /.java directories are needed when not using uid 1000.
+#
+ephemeralVolumePaths = ["/tmp","/home/zap","/.ZAP","/.ZAP_D","/.java","/opt/codedx/zap/logs","/opt/codedx/zap/work","/opt/codedx/zap/work/output","/zap/wrk"]
+
+[request.workflowSecurityContext]
+
+# The pod security context for the tool.
+#
+podSecurityContext = '''
+{
+	"fsGroup": 1000,
+	"runAsGroup": 1000,
+	"runAsUser": 1000,
+	"runAsNonRoot": true,
+	"seccompProfile": {
+		"type": "RuntimeDefault"
+	},
+	"supplementalGroups": []
+}
+'''
+
+# The container security context for the tool.
+#
+securityContext = '''
+{
+	"allowPrivilegeEscalation": false,
+	"capabilities": {
+		"drop": [
+			"ALL"
+		]
+	},
+	"readOnlyRootFilesystem": true
+}
+'''

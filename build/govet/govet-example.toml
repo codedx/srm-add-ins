@@ -12,7 +12,7 @@ projectFileDirectoryPatterns=['go.mod'] # patterns (e.g., *.sln,*.csproj) to fin
 
 # The image name contains the Docker image that handles this scan request file.
 #
-imageName = "codedx/codedx-govetrunner:v1.51.0"
+imageName = "codedx/codedx-govetrunner:v1.52.0"
 
 # The work directory stores k8s secrets, trusted CA certificates,a copy of the scan request
 # file, and the exit code file. The user running the Docker image *must* have write access
@@ -43,3 +43,38 @@ resultFilePath = "/opt/codedx/govet/work/output/govet.results"
 # The Intelligent Orchestration security activities supported by this tool (e.g., sca, sast, dast)
 #
 securityActivities = ['sast']
+
+# The list of emptyDir volumes for the tool. The /.cache and /.local are needed when not using uid 1000.
+#
+ephemeralVolumePaths = ["/tmp","/.cache","/.local","/home/govet/.cache","/home/govet/.local","/opt/codedx/govet/work","/opt/codedx/govet/work/output"]
+
+[request.workflowSecurityContext]
+
+# The pod security context for the tool.
+#
+podSecurityContext = '''
+{
+	"fsGroup": 1000,
+	"runAsGroup": 1000,
+	"runAsUser": 1000,
+	"runAsNonRoot": true,
+	"seccompProfile": {
+		"type": "RuntimeDefault"
+	},
+	"supplementalGroups": []
+}
+'''
+
+# The container security context for the tool.
+#
+securityContext = '''
+{
+	"allowPrivilegeEscalation": false,
+	"capabilities": {
+		"drop": [
+			"ALL"
+		]
+	},
+	"readOnlyRootFilesystem": true
+}
+'''
