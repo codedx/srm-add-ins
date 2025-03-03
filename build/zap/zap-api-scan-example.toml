@@ -101,7 +101,7 @@ shellCmd = '''
 		zapPath='/zap/zap-2.14.0.jar'
 		java -Duser.home=$HOME -jar /zap/zap-2.14.0.jar -cmd -addonupdate
 	fi
-	
+
 	cd /opt/codedx/zap/logs # create zap.out in logs directory
 	/opt/codedx/zap/bin/zap \
 		-zapPath $zapPath \
@@ -111,7 +111,8 @@ shellCmd = '''
 		-scanRequestFile /opt/codedx/zap/work/config/request.toml \
 		-zapStdoutLogFile /opt/codedx/zap/logs/zap.out.log \
 		-zapStderrLogFile /opt/codedx/zap/logs/zap.err.log \
-		-scanMode api
+		-scanMode api \
+		-pythonPath /opt/python/bin/python3
 '''
 
 # The post-shell cmd is an optional command to run after the shell command

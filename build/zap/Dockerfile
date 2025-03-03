@@ -52,12 +52,12 @@ COPY --from=builder /zap-git/zaproxy/docker/scripts/  /zap-data/profile/.ZAP_D/s
 
 RUN apk update && apk add --no-cache libxslt ca-certificates bash netcat-openbsd firefox-esr python3
 
-# install urllib3 package with apk instead of pip3
-RUN apk add py3-urllib3
+# install urllib3, setuptools, and six package with apk instead of pip3
+RUN apk add py3-urllib3 py3-setuptools py3-six
 
 # create and use a virtual environment for python-owasp-zap-v2.4
 WORKDIR /opt/python
-RUN python3 -m venv /opt/python
+RUN python3 -m venv --system-site-packages /opt/python
 RUN /opt/python/bin/pip3 install --upgrade python-owasp-zap-v2.4
 
 # used by zap-api-scan to check if it's running in a container

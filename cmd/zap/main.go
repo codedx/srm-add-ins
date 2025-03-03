@@ -78,7 +78,8 @@ func main() {
 	zapStdoutLogFile := flag.String("zapStdoutLogFile", "zap.out.log", "a path to the ZAP stdout log file")
 	zapStderrLogFile := flag.String("zapStderrLogFile", "zap.err.log", "a path to the ZAP stderr log file")
 
-	pythonPathFlag := flag.String(pythonPathFlagName, "python3", "a path to the Python program")
+	// use default Python path that works with v1.52.0 and earlier
+	pythonPathFlag := flag.String(pythonPathFlagName, "/usr/bin/python3", "a path to the Python program")
 	scanRequestFilePathFlag := flag.String(scanRequestFilePathFlagName, "", "a path to the scan request file")
 
 	zapPath := flag.String("zapPath", "zap.bat", "a path to the ZAP program")
