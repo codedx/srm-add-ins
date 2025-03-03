@@ -50,7 +50,7 @@ COPY cmd/zap/auth_script_hook.py .
 COPY --from=builder /zap-git/zaproxy/docker/policies/ /zap-data/profile/.ZAP/policies/
 COPY --from=builder /zap-git/zaproxy/docker/scripts/  /zap-data/profile/.ZAP_D/scripts/
 
-RUN apk update && apk add --no-cache libxslt ca-certificates bash netcat-openbsd firefox-esr python3
+RUN apk update && apk add --no-cache libxslt ca-certificates bash netcat-openbsd firefox python3
 
 # install urllib3, setuptools, and six package with apk instead of pip3
 RUN apk add py3-urllib3 py3-setuptools py3-six
