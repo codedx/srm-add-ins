@@ -1,4 +1,4 @@
-FROM golang:1.23.6-alpine3.21 as builder
+FROM golang:1.23.6-alpine3.21 AS builder
 
 ARG ZAP_VERSION=2.16.0
 
@@ -50,11 +50,18 @@ COPY cmd/zap/auth_script_hook.py .
 COPY --from=builder /zap-git/zaproxy/docker/policies/ /zap-data/profile/.ZAP/policies/
 COPY --from=builder /zap-git/zaproxy/docker/scripts/  /zap-data/profile/.ZAP_D/scripts/
 
-RUN apk update && apk add --no-cache libxslt ca-certificates bash netcat-openbsd firefox-esr python3 py3-pip
-RUN pip3 install --upgrade python-owasp-zap-v2.4 urllib3
+RUN apk update && apk add --no-cache libxslt ca-certificates bash netcat-openbsd firefox-esr python3
+
+# install urllib3 package with apk instead of pip3
+RUN apk add py3-urllib3
+
+# create and use a virtual environment for python-owasp-zap-v2.4
+WORKDIR /opt/python
+RUN python3 -m venv /opt/python
+RUN /opt/python/bin/pip3 install --upgrade python-owasp-zap-v2.4
 
 # used by zap-api-scan to check if it's running in a container
-ENV IS_CONTAINERIZED true
+ENV IS_CONTAINERIZED=true
 
 WORKDIR /opt/codedx/zap/logs
 WORKDIR /opt/codedx/zap/work/output
@@ -63,7 +70,7 @@ COPY cmd/zap/licenses .
 WORKDIR /opt/codedx/zap/bin
 COPY --from=builder /opt/codedx/zap/src/cmd/zap/zap .
 
-ENV PATH $JAVA_HOME/bin:/zap/:$PATH
+ENV PATH=$JAVA_HOME/bin:/opt/python/bin:/zap/:$PATH
 
 RUN adduser -h /home/zap -s /bin/sh -D zap
 RUN chown -R zap:zap /opt/codedx/zap
