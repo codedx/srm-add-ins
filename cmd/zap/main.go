@@ -69,7 +69,6 @@ func exists(path string) (bool, error) {
 
 func main() {
 
-	const pythonPathFlagName = "pythonPath"
 	const scanRequestFilePathFlagName = "scanRequestFile"
 	const zapApiScanPathFlagName = "zapApiScanPath"
 	const zapWorkDirFlagName = "zapWorkDir"
@@ -78,8 +77,6 @@ func main() {
 	zapStdoutLogFile := flag.String("zapStdoutLogFile", "zap.out.log", "a path to the ZAP stdout log file")
 	zapStderrLogFile := flag.String("zapStderrLogFile", "zap.err.log", "a path to the ZAP stderr log file")
 
-	// use default Python path that works with v1.52.0 and earlier
-	pythonPathFlag := flag.String(pythonPathFlagName, "/usr/bin/python3", "a path to the Python program")
 	scanRequestFilePathFlag := flag.String(scanRequestFilePathFlagName, "", "a path to the scan request file")
 
 	zapPath := flag.String("zapPath", "zap.bat", "a path to the ZAP program")
@@ -131,7 +128,6 @@ func main() {
 
 	sr := console.ReadFileFlagValue(scanRequestFilePathFlagName, scanRequestFilePathFlag, true, cannotParseConfigurationFileExitCode)
 
-	pythonPath := console.ReadFileFlagValue(pythonPathFlagName, pythonPathFlag, true, cannotParseConfigurationFileExitCode)
 	zapApiScanPath := console.ReadFileFlagValue(zapApiScanPathFlagName, zapApiScanPathFlag, true, cannotParseConfigurationFileExitCode)
 	zapWorkDir := console.ReadDirectoryFlagValue(zapWorkDirFlagName, zapWorkDirFlag, true, cannotParseConfigurationFileExitCode)
 
@@ -146,7 +142,7 @@ func main() {
 	if zap.IsNormalScan(*scanMode) {
 		runScan(zapPath, zapStartupWait, zapOut, zapErr, config, xsltProgram, output)
 	} else {
-		runApiScan(pythonPath, zapApiScanPath, zapWorkDir, zapPath, zapStartupWait, zapOut, zapErr, config, xsltProgram, output)
+		runApiScan(zapApiScanPath, zapWorkDir, zapPath, zapStartupWait, zapOut, zapErr, config, xsltProgram, output)
 	}
 }
 
@@ -317,7 +313,7 @@ func saveReport(client *zaproxy.Interface, config *zap.Config, xsltProgram *stri
 	log.Println("Report saved")
 }
 
-func runApiScan(pythonPath string, zapApiScanPath string, zapWorkDir string, zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *os.File, config *zap.Config, xsltProgram *string, output *string) {
+func runApiScan(zapApiScanPath string, zapWorkDir string, zapPath *string, zapStartupWait *int, zapOut *os.File, zapErr *os.File, config *zap.Config, xsltProgram *string, output *string) {
 	// The current ZAP release (2.11.1) requires some of the file path args to be given relative to
 	// the /zap/wrk/ dir. Of the arguments that runApiScan uses, this includes the context file (-n),
 	// config file (-c), and report output file (-x). Future releases of ZAP will not have this
@@ -377,8 +373,11 @@ func runApiScan(pythonPath string, zapApiScanPath string, zapWorkDir string, zap
 		apiScanArgs = append(apiScanArgs, "-c", configFileArg)
 	}
 
+	// for backward compatibility with zap container image v1.52.0 and earlier, rely on the PATH environment variable for the
+	// location of python3, which will be either the global python (/usr/bin/python) used with v1.52.0 and earlier or the
+	// one in a virtual environment (at /opt/python/bin/python3) required for v1.53.0 and later
 	cmd := exec.Command(
-		pythonPath, append(apiScanArgs, config.ScanOptions.ApiScanOptions...)...,
+		"python3", append(apiScanArgs, config.ScanOptions.ApiScanOptions...)...,
 	)
 	cmd.Stdout = io.MultiWriter(os.Stdout, zapOut)
 	cmd.Stderr = io.MultiWriter(os.Stderr, zapErr)
