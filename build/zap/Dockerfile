@@ -1,6 +1,6 @@
-FROM golang:1.22.3-alpine3.18 as builder
+FROM golang:1.23.6-alpine3.21 as builder
 
-ARG ZAP_VERSION=2.14.0
+ARG ZAP_VERSION=2.16.0
 
 WORKDIR /zap
 
@@ -28,7 +28,7 @@ WORKDIR /zap-git
 RUN git clone --depth 1 --branch v$ZAP_VERSION https://github.com/zaproxy/zaproxy.git
 
 # java < 15 is required as zap-api-scan and various dependencies it uses require nashorn support
-FROM eclipse-temurin:11.0.21_9-jdk-alpine
+FROM eclipse-temurin:17.0.14_7-jdk-alpine-3.21
 
 WORKDIR /zap
 COPY --from=builder /zap .
