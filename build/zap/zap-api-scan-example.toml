@@ -98,10 +98,10 @@ preShellCmd = '''
 shellCmd = '''
 	zapPath='/zap/zap.sh'
 	if [ -f /version ]; then
-		zapPath='/zap/zap-2.14.0.jar'
-		java -Duser.home=$HOME -jar /zap/zap-2.14.0.jar -cmd -addonupdate
+		zapPath=$(ls /zap/zap-*.jar)
+		java -Duser.home=$HOME -jar $zapPath -cmd -addonupdate
 	fi
-	
+
 	cd /opt/codedx/zap/logs # create zap.out in logs directory
 	/opt/codedx/zap/bin/zap \
 		-zapPath $zapPath \
