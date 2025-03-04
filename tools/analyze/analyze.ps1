@@ -83,7 +83,7 @@ if ($jobStatus -ne $completedStatus) {
 	throw "Upload job unexpectedly failed with job status $jobStatus"
 }
 
-Write-Verbose "Fetching analysis prep $analysisPrepId..."
+Write-Verbose "Fetching initial analysis prep $analysisPrepId..."
 $analysisPrep = Get-AnalysisPrep $codeDxBaseUrl $codeDxApiKey $analysisPrepId
 
 Write-Verbose "Fetching input metadata from prep $analysisPrepId for input $($analysisPrep.inputIds[0])..."
@@ -98,6 +98,25 @@ $inputMetadata.tags | Where-Object {
 
 	Write-Verbose "Disabling tool input '$($_.toolInput)' with ID $($_.id)..."
 	Set-ToolInputDisabled $codeDxBaseUrl $codeDxApiKey $analysisPrepId $analysisPrep.inputIds[0] $_.id
+}
+
+Write-Verbose "Fetching final analysis prep $analysisPrepId..."
+$finalAnalysisPrep = Get-AnalysisPrep $codeDxBaseUrl $codeDxApiKey $analysisPrepId
+Write-Verbose "Input IDs: $([string]::Join(', ', $finalAnalysisPrep.inputIds))"
+Write-Verbose "Verification Errors: $([string]::Join(', ', $finalAnalysisPrep.verificationErrors))"
+
+Write-Verbose 'Fetching final input metadata...'
+$finalAnalysisPrep.inputIds | ForEach-Object {
+
+	$finalInputMetadata = Get-InputMetadata $codeDxBaseUrl $codeDxApiKey $analysisPrepId $_
+	Write-Verbose "Input: $_"
+	Write-Verbose " Tags: $([string]::Join(', ', $finalInputMetadata.tags))"
+	Write-Verbose " UserOptions: $([string]::Join(', ', $finalInputMetadata.userOptions))"
+	Write-Verbose " UserOptionsErrors: $([string]::Join(', ', $finalInputMetadata.userOptionsErrors))"
+	Write-Verbose " Size: $($finalInputMetadata.fileSize)"
+	Write-Verbose " HasSource: $($finalInputMetadata.sourceAvailable)"
+	Write-Verbose " Warnings: $([string]::Join(', ', $finalInputMetadata.warnings))"
+	Write-Verbose " Errors: $([string]::Join(', ', $finalInputMetadata.errors))"
 }
 
 Write-Verbose 'Invoking analysis...'
