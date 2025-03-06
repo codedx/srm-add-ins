@@ -119,7 +119,7 @@ $finalAnalysisPrep.inputIds | ForEach-Object {
 	Write-Verbose " Errors: $([string]::Join(', ', $finalInputMetadata.errors))"
 }
 
-Write-Verbose 'Invoking analysis...'
+Write-Verbose "Invoking analysis with prep $analysisPrepId..."
 $analysis = Invoke-Analyze $codeDxBaseUrl $codeDxApiKey $analysisPrepId $parentBranchName $branchName
 
 if ($waitForAnalysis) {
