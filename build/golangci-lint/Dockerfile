@@ -1,6 +1,6 @@
 # Dockerfile for codedx-golangci-lint
 
-ARG BASE=golang:1.23.6-bullseye
+ARG BASE=golang:1.24.2-bullseye
 FROM $BASE as builder
 
 # Create a directory to store tool findings
@@ -32,8 +32,8 @@ RUN FILE=toml2json-linux-amd64.tar.gz && \
 	rm $FILE
 
 # Install golangci-lint
-RUN FILE=golangci-lint-1.60.3-linux-amd64.tar.gz && \
-	curl -LO https://github.com/golangci/golangci-lint/releases/download/v1.60.3/$FILE && \
+RUN FILE=golangci-lint-1.64.8-linux-amd64.tar.gz && \
+	curl -LO https://github.com/golangci/golangci-lint/releases/download/v1.64.8/$FILE && \
 	DEST=/opt/codedx/golangci-lint/tools/golangci-lint && \
 	mkdir -p $DEST && \
 	tar -C $DEST --strip-components=1 -xzf $FILE && \
