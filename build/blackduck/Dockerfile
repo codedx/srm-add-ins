@@ -1,5 +1,5 @@
-ARG BASE=codedx/codedx-blackduckrunnerbase:v2025.3.7
-FROM $BASE as blackduckrunnerbase
+ARG BASE=codedx/codedx-blackduckrunnerbase:v2025.6.2
+FROM $BASE AS blackduckrunnerbase
 
 USER root
 
@@ -44,7 +44,7 @@ RUN chown root:blackduck /etc/ssl/certs/java/cacerts && \
 RUN apt-get install -y git
 
 # Install Maven
-ARG MAVEN_VERSION=3.9.4
+ARG MAVEN_VERSION=3.9.10
 RUN curl -LO https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     tar -C /opt -xvf apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     rm apache-maven-${MAVEN_VERSION}-bin.tar.gz
