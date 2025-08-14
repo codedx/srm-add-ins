@@ -172,7 +172,7 @@ $invalidOptionRegex = @(
 	'detect\.source\.path',
 	'detect\.output\.path',
 	'detect\.phone\.home\.passthrough\.invoked\.by\.image',
-	'logging\.level\.com\.synopsys\.integration',
+	'logging\.level\.com\.blackduck\.integration',
 	'logging\.level\.detect',
 	'detect\.blackduck\.scan\.mode',
 	'detect\.blackduck\.rapid\.compare\.mode'
@@ -202,7 +202,7 @@ $validLogLevels = 'INFO','DEBUG','TRACE'
 
 $logLevel = [string]::IsNullOrWhiteSpace($scanRequestConfig.blackduck.logLevel) ? 'INFO' : $scanRequestConfig.blackduck.logLevel
 
-$detectOptions += Get-DetectStringOption 'blackduck.logLevel' 'logging.level.com.synopsys.integration' $logLevel $detectOptions $validLogLevels
+$detectOptions += Get-DetectStringOption 'blackduck.logLevel' 'logging.level.com.blackduck.integration' $logLevel $detectOptions $validLogLevels
 $detectOptions += Get-DetectStringOption 'blackduck.logLevel' 'logging.level.detect' $logLevel $detectOptions $validLogLevels
 
 if ($scanRequestConfig.blackduck.isRapidScan) {
@@ -234,8 +234,8 @@ if (-not ([string]::IsNullOrWhitespace($preDetectCmdLine))) {
 $outputDirectory = join-path $workDirectory 'output'
 $logFile = '/tmp/detect.log'
 
-write-verbose 'Step 3: Running synopsys-detect.jar with specified command arguments...'
-java -jar /synopsys-detect.jar --blackduck.url=$blackDuckBaseUrl --blackduck.api.token=$blackDuckApiToken --detect.wait.for.results=true --detect.cleanup=false --detect.source.path=$sourceDirectory --detect.output.path=$outputDirectory --detect.phone.home.passthrough.invoked.by.image=true @($detectOptions) | Tee-Object $logFile
+write-verbose 'Step 3: Running detect.jar with specified command arguments...'
+java -jar /detect.jar --blackduck.url=$blackDuckBaseUrl --blackduck.api.token=$blackDuckApiToken --detect.wait.for.results=true --detect.cleanup=false --detect.source.path=$sourceDirectory --detect.output.path=$outputDirectory --detect.phone.home.passthrough.invoked.by.image=true @($detectOptions) | Tee-Object $logFile
 
 # For possible exit codes, see https://documentation.blackduck.com/bundle/detect/page/troubleshooting/exit-codes.html
 $detectSuccessful = $LASTEXITCODE -eq 0 -or ($scanRequestConfig.blackduck.isRapidScan -and $LASTEXITCODE -eq 3) # FAILURE_POLICY_VIOLATION
