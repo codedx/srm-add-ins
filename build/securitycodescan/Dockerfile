@@ -1,5 +1,5 @@
 # Includes PowerShell Core
-FROM mcr.microsoft.com/dotnet/sdk:8.0.411-bookworm-slim-amd64
+FROM mcr.microsoft.com/dotnet/sdk:8.0.413-bookworm-slim-amd64
 
 WORKDIR /tmp
 

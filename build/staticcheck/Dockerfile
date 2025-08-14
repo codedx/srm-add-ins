@@ -1,6 +1,6 @@
 # Dockerfile for codedx-staticcheckrunner
 
-ARG BASE=golang:1.24.4-bullseye
+ARG BASE=golang:1.24.6-bullseye
 FROM $BASE as builder
 
 # Create a directory to store tool findings
