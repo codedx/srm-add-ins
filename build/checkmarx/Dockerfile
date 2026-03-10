@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/powershell:lts-7.4-ubuntu-22.04
+FROM mcr.microsoft.com/powershell:7.5-ubuntu-22.04
 
 WORKDIR /opt/codedx/checkmarx/work/config
 WORKDIR /opt/codedx/checkmarx/work/output
