@@ -44,11 +44,11 @@ RUN chown root:blackduck /etc/ssl/certs/java/cacerts && \
 RUN apt-get install -y git
 
 # Install Maven
-ARG MAVEN_VERSION=3.9.13
+ARG MAVEN_VERSION=3.9.14
 RUN curl -LO https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     tar -C /opt -xvf apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     rm apache-maven-${MAVEN_VERSION}-bin.tar.gz
-ENV PATH="$PATH:/opt/apache-maven-3.9.1/bin"
+ENV PATH="$PATH:/opt/apache-maven-3.9.14/bin"
 
 # Install npm (latest LTS is node 18.15.0, includes npm 9.5.0)
 ARG NODE_VERSION=v24.12.0
