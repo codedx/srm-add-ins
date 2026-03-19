@@ -111,7 +111,30 @@ function Invoke-Analyze([string] $baseUrl, [string] $apiKey, [string] $analysisP
 	$branchHeaders['Content-Type'] = 'application/json'
 	Invoke-RestMethod -Uri "$baseUrl/x/analysis-prep/$analysisPrepId/branch" -Method PUT -Headers $branchHeaders -Body $branch
 
+	Write-AnalysisPrepSummary $baseUrl $apiKey $analysisPrepId
+
 	Invoke-RestMethod -Uri "$baseUrl/api/analysis-prep/$analysisPrepId/analyze" -Method POST -Headers $headers
+}
+
+function Write-AnalysisPrepSummary([string] $baseUrl, [string] $apiKey, [string] $analysisPrepId) {
+
+	$analysisPrep = Get-AnalysisPrep $baseUrl $apiKey $analysisPrepId
+	Write-Verbose "Input IDs: $([string]::Join(', ', $analysisPrep.inputIds))"
+	Write-Verbose "Verification Errors: $([string]::Join(', ', $analysisPrep.verificationErrors))"
+
+	Write-Verbose 'Fetching input metadata...'
+	$analysisPrep.inputIds | ForEach-Object {
+
+		$inputMetadata = Get-InputMetadata $baseUrl $apiKey $analysisPrepId $_
+		Write-Verbose "Input: $_"
+		Write-Verbose " Tags: $([string]::Join(', ', $inputMetadata.tags))"
+		Write-Verbose " UserOptions: $([string]::Join(', ', $inputMetadata.userOptions))"
+		Write-Verbose " UserOptionsErrors: $([string]::Join(', ', $inputMetadata.userOptionsErrors))"
+		Write-Verbose " Size: $($inputMetadata.fileSize)"
+		Write-Verbose " HasSource: $($inputMetadata.sourceAvailable)"
+		Write-Verbose " Warnings: $([string]::Join(', ', $inputMetadata.warnings))"
+		Write-Verbose " Errors: $([string]::Join(', ', $inputMetadata.errors))"
+	}
 }
 
 function Wait-CodeDxJob([string] $baseUrl, [string] $apiKey, [string] $jobId, [int] $waitDuration) {

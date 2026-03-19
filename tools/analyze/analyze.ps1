@@ -100,24 +100,8 @@ $inputMetadata.tags | Where-Object {
 	Set-ToolInputDisabled $codeDxBaseUrl $codeDxApiKey $analysisPrepId $analysisPrep.inputIds[0] $_.id
 }
 
-Write-Verbose "Fetching final analysis prep $analysisPrepId..."
-$finalAnalysisPrep = Get-AnalysisPrep $codeDxBaseUrl $codeDxApiKey $analysisPrepId
-Write-Verbose "Input IDs: $([string]::Join(', ', $finalAnalysisPrep.inputIds))"
-Write-Verbose "Verification Errors: $([string]::Join(', ', $finalAnalysisPrep.verificationErrors))"
-
-Write-Verbose 'Fetching final input metadata...'
-$finalAnalysisPrep.inputIds | ForEach-Object {
-
-	$finalInputMetadata = Get-InputMetadata $codeDxBaseUrl $codeDxApiKey $analysisPrepId $_
-	Write-Verbose "Input: $_"
-	Write-Verbose " Tags: $([string]::Join(', ', $finalInputMetadata.tags))"
-	Write-Verbose " UserOptions: $([string]::Join(', ', $finalInputMetadata.userOptions))"
-	Write-Verbose " UserOptionsErrors: $([string]::Join(', ', $finalInputMetadata.userOptionsErrors))"
-	Write-Verbose " Size: $($finalInputMetadata.fileSize)"
-	Write-Verbose " HasSource: $($finalInputMetadata.sourceAvailable)"
-	Write-Verbose " Warnings: $([string]::Join(', ', $finalInputMetadata.warnings))"
-	Write-Verbose " Errors: $([string]::Join(', ', $finalInputMetadata.errors))"
-}
+Write-Verbose "Fetching final analysis prep summary for $analysisPrepId..."
+Write-AnalysisPrepSummary $codeDxBaseUrl $codeDxApiKey $analysisPrepId
 
 Write-Verbose "Invoking analysis with prep $analysisPrepId..."
 $analysis = Invoke-Analyze $codeDxBaseUrl $codeDxApiKey $analysisPrepId $parentBranchName $branchName
