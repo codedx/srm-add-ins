@@ -1,6 +1,6 @@
 # Dockerfile for codedx-coverityrunnerbase
 
-FROM debian:bullseye-20251229
+FROM debian:bullseye-20260316
 
 ARG COVERITY_HOME=/opt/sw/blackduck/coverity
 
@@ -8,7 +8,7 @@ RUN apt-get update && \
 	apt-get install -y wget curl
 
 # Install pwsh
-RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb && \
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb && \
 	dpkg -i packages-microsoft-prod.deb && \
 	apt-get update && \
 	apt-get install -y powershell && \

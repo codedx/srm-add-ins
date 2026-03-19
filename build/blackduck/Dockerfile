@@ -1,4 +1,4 @@
-ARG BASE=codedx/codedx-blackduckrunnerbase:v2025.12.2
+ARG BASE=codedx/codedx-blackduckrunnerbase:v2026.3.0
 FROM $BASE AS blackduckrunnerbase
 
 USER root
@@ -44,14 +44,14 @@ RUN chown root:blackduck /etc/ssl/certs/java/cacerts && \
 RUN apt-get install -y git
 
 # Install Maven
-ARG MAVEN_VERSION=3.9.11
+ARG MAVEN_VERSION=3.9.14
 RUN curl -LO https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     tar -C /opt -xvf apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     rm apache-maven-${MAVEN_VERSION}-bin.tar.gz
-ENV PATH="$PATH:/opt/apache-maven-3.9.1/bin"
+ENV PATH="$PATH:/opt/apache-maven-3.9.14/bin"
 
 # Install npm (latest LTS is node 18.15.0, includes npm 9.5.0)
-ARG NODE_VERSION=v18.15.0
+ARG NODE_VERSION=v24.12.0
 RUN apt-get install -y xz-utils && \
     curl -LO https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz && \
     mkdir -p /usr/local/lib/nodejs && \
@@ -65,7 +65,7 @@ RUN apt-get install -y python3-pip && \
 
 # Install SBT and plugin required by SBT detector
 ARG SBT_VERSION=1.7.1
-ARG JDK_VERSION=11 # required for SBT
+ARG JDK_VERSION=21 # required for SBT
 RUN apt-get install -y openjdk-${JDK_VERSION}-jdk && \
     echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list && \
 	echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list && \
@@ -76,7 +76,7 @@ COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/1.0/plug
 COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/0.13/plugins/plugins.sbt
 
 # Install Go
-ARG GOVERSION=1.23.1
+ARG GOVERSION=1.26.1
 RUN cd && \
 	curl -LO "https://go.dev/dl/go$GOVERSION.linux-amd64.tar.gz" && \
 	tar -C /usr/local -xzf "go$GOVERSION.linux-amd64.tar.gz" && \

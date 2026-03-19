@@ -1,6 +1,6 @@
 # Dockerfile for codedx-govetrunner
 
-ARG BASE=golang:1.24.6-bullseye
+ARG BASE=golang:1.26.1-bookworm
 FROM $BASE as builder
 
 # Create a directory to store tool findings
@@ -16,7 +16,7 @@ COPY build/govet/GoVet.ps1 .
 COPY build/common/add-in.ps1 .
 
 # Install PowerShell Core
-RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb && \
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb && \
 	dpkg -i packages-microsoft-prod.deb && \
 	apt-get update && \
 	apt-get install -y powershell && \
