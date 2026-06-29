@@ -50,9 +50,6 @@ $linters = @{
 	'revive' = @{
 		header = 'GoLint'
 	}
-	'golint' = @{
-		header = 'GoLint'
-	}
 	'ineffassign' = @{
 		header = 'IneffAssign'
 	}
