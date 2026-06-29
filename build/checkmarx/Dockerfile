@@ -15,6 +15,7 @@ RUN FILE=toml2json-linux-amd64.tar.gz && \
 	DEST=/opt/codedx/checkmarx/bin && \
 	mkdir -p $DEST && \
 	tar -C $DEST -xzf $FILE  && \
+	chmod +x $DEST/toml2json && \
 	rm $FILE
 
 ENV PATH=/opt/codedx/checkmarx/bin:${PATH}
