@@ -45,20 +45,16 @@ if ([string]::IsNullOrWhiteSpace($linter)) {
 $linters = @{
 	'errcheck' = @{
 		header = 'ErrCheck'
-		format = 'line-number'
 	}
 	# revive is a drop-in replacement for GoLint
 	'revive' = @{
 		header = 'GoLint'
-		format = 'line-number'
 	}
 	'golint' = @{
 		header = 'GoLint'
-		format = 'line-number'
 	}
 	'ineffassign' = @{
 		header = 'IneffAssign'
-		format = 'line-number'
 	}
 }
 if ($linters.Keys -notcontains $linter) {
@@ -67,15 +63,17 @@ if ($linters.Keys -notcontains $linter) {
 if ($linters.options -contains '--timeout') {
 	Exit-Script 'The golangci-lint options cannot include --timeout'
 }
-$outputFormat = "--out-format=$($linters[$linter].format)"
 
 write-verbose 'Validating options...'
 $invalidOptionRegex = (
 	'out-format',
+	'output\.text\.print-issued-lines',
+	'output\.text\.print-linter-name',
 	'print-issued-lines',
 	'print-linter-name',
 	'issues-exit-code',
-	'disable-all'
+	'disable-all',
+	'default'
 ) -join '|'
 
 $invalidOptions = $options -match "^\s*--($invalidOptionRegex)(?:=.+)?$"
@@ -90,7 +88,7 @@ write-verbose "Step 3: Running $linter..."
 golangci-lint --version
 
 write-output "##tool = $($linters[$linter].header)" | out-file -LiteralPath $outputPath -Append
-golangci-lint run @($options) $outputFormat --print-issued-lines=false --print-linter-name=false --issues-exit-code=0 --disable-all -E $linter $scanRequestConfig.packages | out-file -LiteralPath $outputPath -Append
+golangci-lint run @($options) --output.text.print-issued-lines=false --output.text.print-linter-name=false --issues-exit-code=0 --default=none -E $linter $scanRequestConfig.packages | out-file -LiteralPath $outputPath -Append
 if ($LASTEXITCODE -ne 0) {
 	Exit-Script "Unexpected exit code from golangci-lint ($LASTEXITCODE)."
 }
