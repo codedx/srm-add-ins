@@ -1,6 +1,6 @@
 # Dockerfile for codedx-staticcheckrunner
 
-ARG BASE=golang:1.26.1-bookworm
+ARG BASE=golang:1.26.10-bookworm
 FROM $BASE as builder
 
 # Create a directory to store tool findings
@@ -33,7 +33,7 @@ RUN FILE=toml2json-linux-amd64.tar.gz && \
 
 # Install staticcheck
 RUN FILE=staticcheck_linux_amd64.tar.gz && \
-	curl -LO https://github.com/dominikh/go-tools/releases/download/2024.1.1/$FILE && \
+	curl -LO https://github.com/dominikh/go-tools/releases/download/2026.2.2/$FILE && \
 	DEST=/opt/codedx/staticcheck/tools/staticcheck && \
 	mkdir -p $DEST && \
 	tar -C $DEST --strip-components=1 -xzf $FILE && \
