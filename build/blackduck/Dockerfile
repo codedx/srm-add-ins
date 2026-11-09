@@ -51,7 +51,7 @@ RUN curl -LO https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/ap
 ENV PATH="$PATH:/opt/apache-maven-3.9.16/bin"
 
 # Install npm (latest LTS is node 18.15.0, includes npm 9.5.0)
-ARG NODE_VERSION=v24.12.0
+ARG NODE_VERSION=v24.22.1
 RUN apt-get install -y xz-utils && \
     curl -LO https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz && \
     mkdir -p /usr/local/lib/nodejs && \
