@@ -1,4 +1,4 @@
-ARG BASE=codedx/codedx-blackduckrunnerbase:v2026.3.0
+ARG BASE=codedx/codedx-blackduckrunnerbase:v2026.9.0
 FROM $BASE AS blackduckrunnerbase
 
 USER root
@@ -51,7 +51,7 @@ RUN curl -LO https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/ap
 ENV PATH="$PATH:/opt/apache-maven-3.9.16/bin"
 
 # Install npm (latest LTS is node 18.15.0, includes npm 9.5.0)
-ARG NODE_VERSION=v24.12.0
+ARG NODE_VERSION=v24.22.1
 RUN apt-get install -y xz-utils && \
     curl -LO https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz && \
     mkdir -p /usr/local/lib/nodejs && \
@@ -76,7 +76,7 @@ COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/1.0/plug
 COPY --chown=1001:1001 build/blackduck/plugins.sbt /home/blackduck/.sbt/0.13/plugins/plugins.sbt
 
 # Install Go
-ARG GOVERSION=1.26.1
+ARG GOVERSION=1.27.3
 RUN cd && \
 	curl -LO "https://go.dev/dl/go$GOVERSION.linux-amd64.tar.gz" && \
 	tar -C /usr/local -xzf "go$GOVERSION.linux-amd64.tar.gz" && \

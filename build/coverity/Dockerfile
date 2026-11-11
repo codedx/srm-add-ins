@@ -1,6 +1,6 @@
 # Dockerfile for codedx-coverityrunnerbase
 
-FROM debian:bullseye-20260316
+FROM debian:bookworm-20261104
 
 ARG COVERITY_HOME=/opt/sw/blackduck/coverity
 

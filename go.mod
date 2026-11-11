@@ -1,8 +1,6 @@
 module github.com/codedx/codedx-add-ins
 
-go 1.24.0
-
-toolchain go1.24.2
+go 1.27.3
 
 require (
 	github.com/spf13/viper v1.21.0
